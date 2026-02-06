@@ -35,6 +35,7 @@ def validate_license(device_id, input_key):
     """Girilen anahtarın, bu cihaz ID'si için geçerli olup olmadığını kontrol eder"""
     try:
         # Doğru anahtarı hesapla
+        device_id = device_id.strip().upper()
         signature = hmac.new(SECRET_KEY, device_id.encode('utf-8'), hashlib.sha256).digest()
         license_key = base64.urlsafe_b64encode(signature).decode('utf-8').upper()
         
@@ -72,7 +73,7 @@ if not st.session_state.authenticated:
     
     st.warning("⚠️ Güvenlik gereği otomatik mail butonu pasife alınmıştır.")
     st.info("Lütfen aşağıdaki Cihaz Kodunu kopyalayıp, şu adrese mail atınız:")
-    st.code("muzaffercinarofficial@gmail.com", language="text")
+    st.code("ufomath@gmail.com", language="text")
     st.caption(f"(Konu kısmına 'Lisans Talebi - {device_id}' yazınız)")
     
     st.markdown("### Adım 3: Gelen Şifreyi Girin")
@@ -93,6 +94,17 @@ if not st.session_state.authenticated:
 
 
 # --- GİRİŞ BAŞARILI İSE DEVAM ET ---
+if 'questions' not in st.session_state:
+    loaded_data = load_data()
+    if loaded_data:
+        st.session_state.questions = loaded_data
+        random.shuffle(st.session_state.questions)
+    else:
+        st.session_state.questions = []
+
+if 'index' not in st.session_state: st.session_state.index = 0
+if 'correct_count' not in st.session_state: st.session_state.correct_count = 0
+
 if st.session_state.questions:
     st.sidebar.success("✅ Giriş Başarılı - Hoş Geldiniz!")
     st.progress((st.session_state.index + 1) / len(st.session_state.questions))
