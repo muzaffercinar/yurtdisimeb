@@ -606,25 +606,35 @@ LIVE_TIMER_JS = """
 <script>
 // --- CİHAZ TANIMA (FINGERPRINT) ---
 function checkDeviceFingerprint() {
-    const urlParams = new URLSearchParams(window.parent.location.search);
-    const urlDid = urlParams.get('did');
-    const localDid = localStorage.getItem('demo_did');
+    try {
+        const urlParams = new URLSearchParams(window.parent.location.search);
+        var urlDid = urlParams.get('did');
+        const localDid = localStorage.getItem('demo_did');
 
-    // 1. Durum: Tarayıcıda kayıtlı ID var ama URL'de farklı/yok -> YÖNLENDİR (Eski oturumu geri getir)
-    if (localDid && localDid !== urlDid) {
-        urlParams.set('did', localDid);
-        window.parent.location.search = urlParams.toString();
-        return;
-    }
+        // URL'de 'did' yoksa boş string olarak düşün
+        if (!urlDid) urlDid = "";
 
-    // 2. Durum: Tarayıcıda yok ama URL'de var -> KAYDET (Yeni oturumu cihazla eşleştir)
-    if (!localDid && urlDid) {
-        localStorage.setItem('demo_did', urlDid);
+        // 1. senaryo: Tarayıcıda ID var ama URL'de yok veya farklı
+        if (localDid && localDid !== urlDid) {
+            // Sonsuz döngü koruması: Zaten oraya gidiyorsak dur
+            if (window.parent.location.href.includes("did=" + localDid)) return;
+            
+            console.log("Eski oturum bulundu, yönlendiriliyor: " + localDid);
+            urlParams.set('did', localDid);
+            window.parent.location.search = urlParams.toString();
+        }
+        // 2. senaryo: Tarayıcıda ID yok, URL'de var -> Kaydet
+        else if (!localDid && urlDid) {
+            console.log("Yeni oturum kaydediliyor: " + urlDid);
+            localStorage.setItem('demo_did', urlDid);
+        }
+    } catch (e) {
+        console.error("Fingerprint error:", e);
     }
 }
 
-// Sayfa yüklendiğinde kontrol et
-checkDeviceFingerprint();
+// Sayfa yüklendiğinde DEĞİL, biraz gecikmeli çalıştır ki URL tam otursun
+setTimeout(checkDeviceFingerprint, 500);
 
 // --- CANLI SAYAÇ ---
 function startTimer(duration, display) {
@@ -645,35 +655,42 @@ function startTimer(duration, display) {
     }, 1000);
 }
 
-window.onload = function () {
-    // Mevcut bir sayaç varsa temizle
-    var existing = window.parent.document.getElementById('live-demo-timer');
-    if (existing) return;
-    
+    // Mevcut bir sayaç var mı kontrol et
+    var timerBox = window.parent.document.getElementById('live-demo-timer');
     var timeleft = {{TIME_LEFT}}; 
     if (timeleft <= 0) return;
 
-    var timerBox = window.parent.document.createElement('div');
-    timerBox.id = 'live-demo-timer';
-    timerBox.style.position = 'fixed';
-    timerBox.style.top = '60px'; 
-    timerBox.style.right = '20px';
-    timerBox.style.padding = '10px 20px';
-    timerBox.style.background = 'linear-gradient(135deg, #FF512F 0%, #DD2476 100%)';
-    timerBox.style.color = 'white';
-    timerBox.style.borderRadius = '30px';
-    timerBox.style.fontSize = '20px';
-    timerBox.style.fontWeight = 'bold';
-    timerBox.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
-    timerBox.style.zIndex = '999999';
-    timerBox.style.display = 'flex';
-    timerBox.style.alignItems = 'center';
-    timerBox.style.gap = '10px';
-    timerBox.innerHTML = '<span>⏳</span><span id="demo-time-display">--:--</span>';
+    if (!timerBox) {
+        // Yoksa oluştur
+        timerBox = window.parent.document.createElement('div');
+        timerBox.id = 'live-demo-timer';
+        timerBox.style.position = 'fixed';
+        timerBox.style.top = '60px'; 
+        timerBox.style.right = '20px';
+        timerBox.style.padding = '10px 20px';
+        timerBox.style.background = 'linear-gradient(135deg, #FF512F 0%, #DD2476 100%)';
+        timerBox.style.color = 'white';
+        timerBox.style.borderRadius = '30px';
+        timerBox.style.fontSize = '20px';
+        timerBox.style.fontWeight = 'bold';
+        timerBox.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
+        timerBox.style.zIndex = '999999';
+        timerBox.style.display = 'flex';
+        timerBox.style.alignItems = 'center';
+        timerBox.style.gap = '10px';
+        timerBox.innerHTML = '<span>⏳</span><span id="demo-time-display">--:--</span>';
+        
+        window.parent.document.body.appendChild(timerBox);
+    }
     
-    window.parent.document.body.appendChild(timerBox);
-    
+    // Her durumda sayacı (yeniden) başlat
     var display = timerBox.querySelector('#demo-time-display');
+    
+    // Eski sayacı temizle (display elementi üzerinde ID saklayarak)
+    if (display.dataset.intervalId) {
+        clearInterval(display.dataset.intervalId);
+    }
+    
     startTimer(timeleft, display);
 };
 </script>
