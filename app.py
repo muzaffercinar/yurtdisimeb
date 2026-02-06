@@ -511,10 +511,92 @@ LOGO_SVG = """
 
 # Logo'yu Base64'e çevir (Görüntülemek için)
 import base64
+# === ARAYÜZ, CSS VE LOGO (HER ZAMAN GÖSTERİLSİN) ===
+# Logo'yu Base64'e çevir
 logo_b64 = base64.b64encode(LOGO_SVG.encode('utf-8')).decode("utf-8")
 logo_html = f'<img src="data:image/svg+xml;base64,{logo_b64}" width="150">'
 
-# === GELİŞMİŞ DEMO TAKİP SİSTEMİ (LOCALSTORAGE + SUNUCU) ===
+# CSS STİLLERİ
+st.markdown("""
+<style>
+/* Arka Plan */
+.stApp {
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
+
+/* Streamlit Markasını Gizle */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+
+/* Cam Efekti Kart */
+.login-box {
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(8.5px);
+    -webkit-backdrop-filter: blur(8.5px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    padding: 40px;
+    text-align: center;
+    color: white;
+}
+
+/* Input Alanları */
+.stTextInput input {
+    background-color: rgba(255, 255, 255, 0.8) !important;
+    border-radius: 10px !important;
+    border: none !important;
+    padding: 15px !important;
+    font-size: 18px !important;
+    text-align: center !important;
+    letter-spacing: 2px !important;
+    color: #333 !important;
+}
+
+/* Başlıklar */
+h1, h2, h3 {
+    color: white !important;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Buton */
+.stButton button {
+    background: linear-gradient(45deg, #FF512F 0%, #DD2476 100%) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 50px !important;
+    padding: 15px 30px !important;
+    font-size: 20px !important;
+    font-weight: bold !important;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
+    transition: all 0.3s ease !important;
+    width: 100% !important;
+}
+.stButton button:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 15px 25px rgba(0,0,0,0.3) !important;
+    
+/* İletişim Kutusu */
+.contact-info {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 20px;
+    font-size: 14px;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# === GELİŞMİŞ DEMO TAKİP SİSTEMİ ===
 import uuid
 
 @st.cache_resource
@@ -528,188 +610,93 @@ demo_duration = 60  # 60 saniye
 query_params = st.query_params
 url_did = query_params.get("did", None)
 
-# 2. JavaScript: LocalStorage Kontrolü ve Yönlendirme (SADECE ID YOKSA)
-if not url_did:
-    js_code = """
-    <script>
-        let localDid = localStorage.getItem('bekard_demo_id');
-        if (localDid) {
-            window.parent.location.href = window.parent.location.href.split('?')[0] + '?did=' + localDid;
-        } else {
-            localDid = 'DEMO-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-            localStorage.setItem('bekard_demo_id', localDid);
-            window.parent.location.href = window.parent.location.href.split('?')[0] + '?did=' + localDid;
-        }
-    </script>
-    """
-    st.components.v1.html(js_code, height=0)
-    st.stop() # JS yönlendirmesini beklerken Python'u durdur
-
-# === PYTHON TARAFI KONTROLÜ ===
 current_time = time.time()
 is_demo_expired = False
 remaining_time = 0
 elapsed_time = 0 
 
-# ID var, kontrol et
-if url_did:
-    identifier = url_did
-    
-    if not st.session_state.authenticated:
+# Giriş yapılmamışsa DEMO kontrolü yap
+if not st.session_state.authenticated:
+    # A) URL'de ID YOK -> JS ile kontrol et/yönlendir
+    if not url_did:
+        # Önce boş ekranı doldurmak için LOGO gösterelim
+        st.markdown('<div class="login-box">', unsafe_allow_html=True)
+        st.markdown(logo_html, unsafe_allow_html=True)
+        st.markdown("<h1>MC AKADEMİ</h1>", unsafe_allow_html=True)
+        st.markdown("<p>Yükleniyor...</p>", unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        js_code = """
+        <script>
+            let localDid = localStorage.getItem('bekard_demo_id');
+            if (localDid) {
+                window.parent.location.href = window.parent.location.href.split('?')[0] + '?did=' + localDid;
+            } else {
+                localDid = 'DEMO-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+                localStorage.setItem('bekard_demo_id', localDid);
+                window.parent.location.href = window.parent.location.href.split('?')[0] + '?did=' + localDid;
+            }
+        </script>
+        """
+        st.components.v1.html(js_code, height=0)
+        st.stop() # Yönlendirmeyi bekle
+
+    # B) URL'de ID VAR -> Süre kontrolü yap
+    else:
+        identifier = url_did
         if identifier in demo_tracker:
-            # Mevcut kullanıcı
             start_time = demo_tracker[identifier]
             elapsed_time = current_time - start_time
-            
             if elapsed_time > demo_duration:
                 is_demo_expired = True
                 remaining_time = 0
             else:
                 remaining_time = int(demo_duration - elapsed_time)
         else:
-            # Yeni kullanıcı (veya sunucu resetlenmiş): Yeni başlat
+            # Yeni kullanıcı (veya server reset)
             demo_tracker[identifier] = current_time
             remaining_time = demo_duration
 
-
-
-# Giriş yapılmamış VE Demo dolmuşsa -> ENGELLE
-if not st.session_state.authenticated and is_demo_expired:
-    # --- CSS STİLLERİ ---
-    st.markdown("""
-    <style>
-    /* Arka Plan */
-    .stApp {
-        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-        background-size: 400% 400%;
-        animation: gradient 15s ease infinite;
-    }
-    
-    @keyframes gradient {
-        0% {background-position: 0% 50%;}
-        50% {background-position: 100% 50%;}
-        100% {background-position: 0% 50%;}
-    }
-    
-    /* Streamlit Markasını Gizle */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    
-    /* Cam Efekti Kart */
-    .login-box {
-        background: rgba(255, 255, 255, 0.15);
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-        backdrop-filter: blur(8.5px);
-        -webkit-backdrop-filter: blur(8.5px);
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        padding: 40px;
-        text-align: center;
-        color: white;
-    }
-    
-    /* Input Alanları */
-    .stTextInput input {
-        background-color: rgba(255, 255, 255, 0.8) !important;
-        border-radius: 10px !important;
-        border: none !important;
-        padding: 15px !important;
-        font-size: 18px !important;
-        text-align: center !important;
-        letter-spacing: 2px !important;
-        color: #333 !important;
-    }
-    
-    /* Başlıklar */
-    h1, h2, h3 {
-        color: white !important;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    }
-    
-    /* Buton */
-    .stButton button {
-        background: linear-gradient(45deg, #FF512F 0%, #DD2476 100%) !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 50px !important;
-        padding: 15px 30px !important;
-        font-size: 20px !important;
-        font-weight: bold !important;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
-        transition: all 0.3s ease !important;
-        width: 100% !important;
-    }
-    .stButton button:hover {
-        transform: translateY(-3px) !important;
-        box-shadow: 0 15px 25px rgba(0,0,0,0.3) !important;
-    }
-
-    /* İletişim Kutusu */
-    .contact-info {
-        background: rgba(0, 0, 0, 0.3);
-        padding: 15px;
-        border-radius: 10px;
-        margin-top: 20px;
-        font-size: 14px;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # --- LOGO VE BAŞLIK ---
-    st.markdown('<div class="login-box">', unsafe_allow_html=True)
-    st.markdown(logo_html, unsafe_allow_html=True)
-    st.markdown("<h1>MC AKADEMİ</h1>", unsafe_allow_html=True)
-    st.markdown("<h3>Yurt Dışı Öğretmenlik Sınav Hazırlık</h3>", unsafe_allow_html=True)
-    
-    # Süre doldu mesajı
-    st.error("⏳ Ücretsiz deneme süreniz (1 dakika) doldu.")
-    st.markdown("<p>Devam etmek için lütfen giriş yapın.</p>", unsafe_allow_html=True)
-    st.markdown("<br>", unsafe_allow_html=True)
-    
-    # --- GİRİŞ FORMU ---
-    col1, col2, col3 = st.columns([1,2,1])
-    with col2:
-        user_code_input = st.text_input("Kullanıcı Kodu", placeholder="ÖRNEK: MEB001", label_visibility="collapsed")
-        st.markdown("<p style='font-size: 12px; margin-top: -10px; margin-bottom: 20px;'>Kullanıcı Kodunuzu Girin</p>", unsafe_allow_html=True)
+# === EKRAN ÇİZİMİ (Süre dolduysa veya Giriş Ekranı) ===
+if not st.session_state.authenticated:
+    # Eğer süre dolduysa -> ENGELLE
+    if is_demo_expired:
+        st.markdown('<div class="login-box">', unsafe_allow_html=True)
+        st.markdown(logo_html, unsafe_allow_html=True)
+        st.markdown("<h1>MC AKADEMİ</h1>", unsafe_allow_html=True)
+        st.markdown("<h3>Yurt Dışı Öğretmenlik Sınav Hazırlık</h3>", unsafe_allow_html=True)
         
-        license_input = st.text_input("Şifre", placeholder="******", type="password", label_visibility="collapsed")
-        st.markdown("<p style='font-size: 12px; margin-top: -10px; margin-bottom: 20px;'>Aktivasyon Şifrenizi Girin</p>", unsafe_allow_html=True)
+        st.error("⏳ Ücretsiz deneme süreniz (1 dakika) doldu.")
+        st.markdown("<p>Devam etmek için lütfen giriş yapın.</p><br>", unsafe_allow_html=True)
         
-        if st.button("GİRİŞ YAP 🚀"):
-            if not user_code_input.strip():
-                st.error("⚠️ Lütfen Kullanıcı Kodunuzu girin!")
-            elif not license_input.strip():
-                st.error("⚠️ Lütfen Aktivasyon Şifrenizi girin!")
-            elif validate_license(user_code_input, license_input):
-                st.session_state.authenticated = True
-                st.session_state.user_code = user_code_input.strip().upper()
-                st.query_params["user"] = user_code_input.strip().upper()
-                st.query_params["key"] = license_input.strip().upper()
-                st.balloons()
-                st.rerun()
-            else:
-                st.error("❌ Hatalı veya geçersiz şifre!")
+        # Giriş Formu
+        col1, col2, col3 = st.columns([1,2,1])
+        with col2:
+            user_code_input = st.text_input("Kullanıcı Kodu", placeholder="ÖRNEK: MEB001", label_visibility="collapsed")
+            license_input = st.text_input("Şifre", placeholder="******", type="password", label_visibility="collapsed")
+            
+            if st.button("GİRİŞ YAP 🚀"):
+                if validate_license(user_code_input, license_input):
+                    st.session_state.authenticated = True
+                    st.session_state.user_code = user_code_input.strip().upper()
+                    st.rerun()
+                else:
+                    st.error("❌ Hatalı şifre!")
+        
+        # İletişim & Paylaşım
+        st.markdown("""
+        <div class="contact-info">
+            <p>📧 ufomath@gmail.com | 📱 0505 446 51 98</p>
+            <hr>
+            <a href="https://wa.me/?text=Merhaba%2C%20https%3A%2F%2Fyurtdisimebhazirlik.streamlit.app" target="_blank">
+                <button style="background-color: #25D366; color: white; border: none; padding: 10px; width: 100%; border-radius: 5px;">WhatsApp ile Paylaş</button>
+            </a>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+        st.stop()
 
-    # --- İLETİŞİM VE PAYLAŞIM ---
-    st.markdown("""
-    <div class="contact-info">
-        <p>🔑 <strong>Kullanıcı Kodu ve Şifre Talep:</strong></p>
-        <p>📧 Mail: <strong>ufomath@gmail.com</strong></p>
-        <p>📱 WhatsApp: <strong>0505 446 51 98</strong></p>
-        <hr style="margin: 10px 0; border-color: rgba(255,255,255,0.2);">
-        <p>📣 <strong>Arkadaşlarına Öner:</strong></p>
-        <a href="https://wa.me/?text=Merhaba%2C%20Yurt%20d%C4%B1%C5%9F%C4%B1%20%C3%B6%C4%9Fretmenlik%20s%C4%B1nav%C4%B1%20i%C3%A7in%20bu%20uygulamay%C4%B1%20kesinlikle%20incelemelisin%3A%20https%3A%2F%2Fyurtdisimebhazirlik.streamlit.app" target="_blank" style="text-decoration: none;">
-            <button style="background-color: #25D366; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                <img src="https://cdn-icons-png.flaticon.com/512/1384/1384007.png" width="20" style="filter: brightness(0) invert(1);">
-                WhatsApp ile Paylaş
-            </button>
-        </a>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.stop()
 
 elif not st.session_state.authenticated:
     # Demo modu devam ediyor - Sorunsuz gezinme için geçici izin
