@@ -599,6 +599,86 @@ h1, h2, h3 {
 </style>
 """, unsafe_allow_html=True)
 
+
+
+# === CANLI SAYAÇ VE CİHAZ TANIMA JS (FINGERPRINT + TIMER) ===
+LIVE_TIMER_JS = """
+<script>
+// --- CİHAZ TANIMA (FINGERPRINT) ---
+function checkDeviceFingerprint() {
+    const urlParams = new URLSearchParams(window.parent.location.search);
+    const urlDid = urlParams.get('did');
+    const localDid = localStorage.getItem('demo_did');
+
+    // 1. Durum: Tarayıcıda kayıtlı ID var ama URL'de farklı/yok -> YÖNLENDİR (Eski oturumu geri getir)
+    if (localDid && localDid !== urlDid) {
+        urlParams.set('did', localDid);
+        window.parent.location.search = urlParams.toString();
+        return;
+    }
+
+    // 2. Durum: Tarayıcıda yok ama URL'de var -> KAYDET (Yeni oturumu cihazla eşleştir)
+    if (!localDid && urlDid) {
+        localStorage.setItem('demo_did', urlDid);
+    }
+}
+
+// Sayfa yüklendiğinde kontrol et
+checkDeviceFingerprint();
+
+// --- CANLI SAYAÇ ---
+function startTimer(duration, display) {
+    var timer = duration, minutes, seconds;
+    var interval = setInterval(function () {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.textContent = minutes + ":" + seconds;
+
+        if (--timer < 0) {
+            clearInterval(interval);
+            window.parent.location.reload();
+        }
+    }, 1000);
+}
+
+window.onload = function () {
+    // Mevcut bir sayaç varsa temizle
+    var existing = window.parent.document.getElementById('live-demo-timer');
+    if (existing) return;
+    
+    var timeleft = %d; 
+    if (timeleft <= 0) return;
+
+    var timerBox = window.parent.document.createElement('div');
+    timerBox.id = 'live-demo-timer';
+    timerBox.style.position = 'fixed';
+    timerBox.style.top = '60px'; 
+    timerBox.style.right = '20px';
+    timerBox.style.padding = '10px 20px';
+    timerBox.style.background = 'linear-gradient(135deg, #FF512F 0%, #DD2476 100%)';
+    timerBox.style.color = 'white';
+    timerBox.style.borderRadius = '30px';
+    timerBox.style.fontSize = '20px';
+    timerBox.style.fontWeight = 'bold';
+    timerBox.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
+    timerBox.style.zIndex = '999999';
+    timerBox.style.display = 'flex';
+    timerBox.style.alignItems = 'center';
+    timerBox.style.gap = '10px';
+    timerBox.innerHTML = '<span>⏳</span><span id="demo-time-display">--:--</span>';
+    
+    window.parent.document.body.appendChild(timerBox);
+    
+    var display = timerBox.querySelector('#demo-time-display');
+    startTimer(timeleft, display);
+};
+</script>
+"""
+
 # === GELİŞMİŞ DEMO TAKİP SİSTEMİ (DOSYA TABANLI KALICI) ===
 import uuid
 import os
@@ -661,6 +741,10 @@ if not st.session_state.authenticated and identifier:
         demo_tracker[identifier] = current_time
         save_demo_tracker(demo_tracker)  # Yeni kullanıcıyı dosyaya kaydet
         remaining_time = demo_duration
+
+# CANLI SAYAÇ ENJEKSİYONU (Her re-run'da çalışır ama JS kontrolü var)
+if not st.session_state.authenticated and not is_demo_expired:
+    st.components.v1.html(LIVE_TIMER_JS % remaining_time, height=0)
 
 # === EKRAN ÇİZİMİ ===
 if not st.session_state.authenticated:
@@ -769,9 +853,11 @@ if st.session_state.mode == "menu":
         if st.button("📚 GENEL SINAV\n(1360 Soru)", use_container_width=True, type="primary"):
             start_mode("exam", all_questions)
             st.rerun()
-        if st.button("🤖 AI DESTEKLİ\n(Yüksek Olasılık)", use_container_width=True):
+        if st.button("🤖 AI DESTEKLİ\n(1000 Soruluk Benzer Sorular)", use_container_width=True):
             if ai_questions:
-                start_mode("exam", ai_questions, timer_minutes=45)
+                # Demo kullanıcısıysa ek süre verme (None), giriş yapmışsa 45 dk
+                t_limit = 45 if st.session_state.authenticated else None
+                start_mode("exam", ai_questions, timer_minutes=t_limit)
                 st.rerun()
             else:
                 st.error("AI soru dosyası bulunamadı!")
