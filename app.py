@@ -597,14 +597,31 @@ h1, h2, h3 {
 </style>
 """, unsafe_allow_html=True)
 
-# === GELİŞMİŞ DEMO TAKİP SİSTEMİ ===
+# === GELİŞMİŞ DEMO TAKİP SİSTEMİ (DOSYA TABANLI KALICI) ===
 import uuid
+import os
 
-@st.cache_resource
-def get_demo_tracker():
+DEMO_TRACKER_FILE = "demo_tracker.json"
+
+def load_demo_tracker():
+    """Demo takip verilerini dosyadan yükle"""
+    if os.path.exists(DEMO_TRACKER_FILE):
+        try:
+            with open(DEMO_TRACKER_FILE, "r") as f:
+                return json.load(f)
+        except:
+            return {}
     return {}
 
-demo_tracker = get_demo_tracker()
+def save_demo_tracker(tracker):
+    """Demo takip verilerini dosyaya kaydet"""
+    try:
+        with open(DEMO_TRACKER_FILE, "w") as f:
+            json.dump(tracker, f)
+    except:
+        pass
+
+demo_tracker = load_demo_tracker()
 demo_duration = 60  # 60 saniye
 
 # 1. URL'de 'did' var mı kontrol et
@@ -661,6 +678,7 @@ if not st.session_state.authenticated:
             remaining_time = int(demo_duration - elapsed_time)
     else:
         demo_tracker[identifier] = current_time
+        save_demo_tracker(demo_tracker)  # Yeni kullanıcıyı dosyaya kaydet
         remaining_time = demo_duration
 
 # === EKRAN ÇİZİMİ ===
