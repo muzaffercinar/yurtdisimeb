@@ -633,19 +633,13 @@ is_demo_expired = False
 remaining_time = 0
 elapsed_time = 0 
 
-# --- KULLANICI KİMLİĞİ (Basitleştirilmiş) ---
-if not url_did:
-    # Session state'te ID var mı?
-    if "demo_id" not in st.session_state:
-        # Yeni random ID oluştur
-        new_id = "USER-" + str(uuid.uuid4())[:8].upper()
-        st.session_state.demo_id = new_id
-    
-    # URL'ye ID'yi ekle ve yönlendir
-    st.query_params["did"] = st.session_state.demo_id
-    st.rerun()
+# --- KULLANICI KİMLİĞİ (Arka Planda, Sessizce) ---
+# Session state'te ID yoksa oluştur
+if "demo_id" not in st.session_state:
+    st.session_state.demo_id = "USER-" + str(uuid.uuid4())[:8].upper()
 
-identifier = url_did if url_did else st.session_state.get("demo_id", None)
+# Identifier'ı session state'ten al (URL'ye gerek yok)
+identifier = st.session_state.demo_id
 
 # --- SÜRE KONTROLÜ ---
 if not st.session_state.authenticated and identifier:
