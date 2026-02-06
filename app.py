@@ -650,7 +650,7 @@ window.onload = function () {
     var existing = window.parent.document.getElementById('live-demo-timer');
     if (existing) return;
     
-    var timeleft = %d; 
+    var timeleft = {{TIME_LEFT}}; 
     if (timeleft <= 0) return;
 
     var timerBox = window.parent.document.createElement('div');
@@ -744,7 +744,7 @@ if not st.session_state.authenticated and identifier:
 
 # CANLI SAYAÇ ENJEKSİYONU (Her re-run'da çalışır ama JS kontrolü var)
 if not st.session_state.authenticated and not is_demo_expired:
-    st.components.v1.html(LIVE_TIMER_JS % remaining_time, height=0)
+    st.components.v1.html(LIVE_TIMER_JS.replace("{{TIME_LEFT}}", str(remaining_time)), height=0)
 
 # === EKRAN ÇİZİMİ ===
 if not st.session_state.authenticated:
