@@ -528,39 +528,22 @@ demo_duration = 60  # 60 saniye
 query_params = st.query_params
 url_did = query_params.get("did", None)
 
-# 2. JavaScript: LocalStorage Kontrolü ve Yönlendirme
-# Bu script her açılışta çalışır:
-# - URL'de DID yoksa: LocalStorage'a bakar. Varsa URL'ye ekler reload eder. Yoksa yeni üretir, kaydeder, URL'ye ekler reload eder.
-# - URL'de DID varsa: LocalStorage'dakini günceller (sync kalması için).
-js_code = """
-<script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlDid = urlParams.get('did');
-    let localDid = localStorage.getItem('bekard_demo_id');
-
-    if (!urlDid) {
-        // URL'de ID yok (Temiz giriş)
+# 2. JavaScript: LocalStorage Kontrolü ve Yönlendirme (SADECE ID YOKSA)
+if not url_did:
+    js_code = """
+    <script>
+        let localDid = localStorage.getItem('bekard_demo_id');
         if (localDid) {
-            // Daha önce girmiş -> URL'ye ekle ve git
             window.parent.location.href = window.parent.location.href.split('?')[0] + '?did=' + localDid;
         } else {
-            // İlk defa giriyor -> Yeni üret, kaydet ve git
             localDid = 'DEMO-' + Math.random().toString(36).substr(2, 9).toUpperCase();
             localStorage.setItem('bekard_demo_id', localDid);
             window.parent.location.href = window.parent.location.href.split('?')[0] + '?did=' + localDid;
         }
-    } else {
-        // URL'de ID var -> LocalStorage'a eşitle (Güvenlik)
-        if (localDid !== urlDid) {
-            localStorage.setItem('bekard_demo_id', urlDid);
-        }
-    }
-</script>
-"""
-# JS kodunu çalıştır (Sadece did yoksa çalışsa daha iyi ama her zaman çalışıp kontrol etmesi güvenli)
-if not url_did:
+    </script>
+    """
     st.components.v1.html(js_code, height=0)
-    st.stop() # JS yönlendirmesini bekle
+    st.stop() # JS yönlendirmesini beklerken Python'u durdur
 
 # === PYTHON TARAFI KONTROLÜ ===
 current_time = time.time()
@@ -568,7 +551,7 @@ is_demo_expired = False
 remaining_time = 0
 elapsed_time = 0 
 
-# Eğer URL'den DID geldiyse (JS sayesinde gelmiş olmalı)
+# ID var, kontrol et
 if url_did:
     identifier = url_did
     
@@ -584,17 +567,10 @@ if url_did:
             else:
                 remaining_time = int(demo_duration - elapsed_time)
         else:
-            # Yeni kullanıcı (veya sunucu resetlenmiş ama client hatırlıyor)
-            # Eğer sunucu resetlendiyse süre sıfırlanabilir. Bunu önlemek için
-            # Client zaten 'süresi doldu' bilgisini tutamaz ama sunucuda
-            # kalıcılık (DB) yoksa RAM silinince süre sıfırlanır.
-            # Şu anki yapıda RAM kullanıyoruz.
+            # Yeni kullanıcı (veya sunucu resetlenmiş): Yeni başlat
             demo_tracker[identifier] = current_time
             remaining_time = demo_duration
 
-else:
-    # JS henüz çalışmadı veya yönlendiriyor
-    st.stop()
 
 
 # Giriş yapılmamış VE Demo dolmuşsa -> ENGELLE
