@@ -836,8 +836,8 @@ if not st.session_state.authenticated:
 
         st.markdown("""
         <div class="contact-info">
-            <p style="color: #FF4444; font-size: 18px; margin: 0 0 10px 0; font-weight: bold; letter-spacing: 1px; text-transform: uppercase;">🔑 LİSANS ANAHTARI TALEP ET</p>
-            <p>📧 ufomath@gmail.com</p>
+            <p style="color: #1976D2; font-size: 14px; margin: 0 0 8px 0; font-weight: 600; letter-spacing: 0.5px;">🔑 LİSANS ANAHTARI TALEP ET</p>
+            <p style="color: #FF4444; font-size: 18px; margin: 0; font-weight: bold;">📧 ufomath@gmail.com</p>
             <hr>
             <a href="https://wa.me/?text=Merhaba%2C%20https%3A%2F%2Fyurtdisimebhazirlik.streamlit.app" target="_blank">
                 <button style="background-color: #25D366; color: white; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 20px;">
