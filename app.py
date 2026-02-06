@@ -596,16 +596,35 @@ h1, h2, h3 {
 </style>
 """, unsafe_allow_html=True)
 
-# === GELİŞMİŞ DEMO TAKİP SİSTEMİ ===
-# === GELİŞMİŞ DEMO TAKİP SİSTEMİ ===
+# === GELİŞMİŞ DEMO TAKİP SİSTEMİ (PERSISTENT) ===
 import uuid
+
+DEMO_REGISTRY_FILE = "demo_registry.json"
+
+def load_demo_registry():
+    if os.path.exists(DEMO_REGISTRY_FILE):
+        try:
+            with open(DEMO_REGISTRY_FILE, "r") as f:
+                return json.load(f)
+        except:
+            return {}
+    return {}
+
+def save_demo_registry(data):
+    try:
+        with open(DEMO_REGISTRY_FILE, "w") as f:
+            json.dump(data, f)
+    except:
+        pass
 
 @st.cache_resource
 def get_demo_tracker():
-    return {}
+    # Başlangıçta dosyadan yükle
+    return load_demo_registry()
 
 demo_tracker = get_demo_tracker()
 demo_duration = 60  # 60 saniye
+
 
 # 1. URL'de 'did' var mı kontrol et
 query_params = st.query_params
@@ -673,6 +692,7 @@ if not st.session_state.authenticated:
     else:
         # Yeni kullanıcı
         demo_tracker[identifier] = current_time
+        save_demo_registry(demo_tracker) # Dosyaya kaydet
         remaining_time = demo_duration
 
 # === EKRAN ÇİZİMİ (Süre dolduysa veya Giriş Ekranı) ===
