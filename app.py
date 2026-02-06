@@ -588,42 +588,41 @@ button[title="View fullscreen"] {display: none !important;}
 .st-emotion-cache-6qob1r {display: none !important;}
 iframe[title="streamlit_app"] {display: none !important;}
 
-/* ===== CUSTOM LOADING OVERLAY ===== */
+/* ===== INSTANT LOADING OVERLAY (Covers Streamlit splash) ===== */
 .stApp::before {
     content: "";
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     background: linear-gradient(135deg, #0A1628 0%, #182848 100%);
-    z-index: 999999;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.5s ease;
+    z-index: 999999999;
+    opacity: 1;
+    pointer-events: all;
+    animation: hideOverlay 0.8s ease-out 0.3s forwards;
 }
 
-/* Loading animation - shows UFOmath branding */
-.stApp[data-test-local="false"]::after {
-    content: "🚀 UFOmath Yükleniyor...";
+/* UFOmath loading text - shows immediately */
+.stApp::after {
+    content: "🚀 UFOmath";
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-family: 'Inter', sans-serif;
-    font-size: 24px;
-    font-weight: 600;
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 32px;
+    font-weight: 700;
     color: white;
-    z-index: 9999999;
-    opacity: 0;
-    animation: fadeInOut 2s ease-in-out;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    z-index: 9999999999;
+    text-shadow: 0 4px 20px rgba(75, 108, 183, 0.6);
+    letter-spacing: 2px;
+    animation: hideOverlay 0.8s ease-out 0.3s forwards;
 }
 
-@keyframes fadeInOut {
-    0% { opacity: 1; }
-    70% { opacity: 1; }
-    100% { opacity: 0; }
+@keyframes hideOverlay {
+    0% { opacity: 1; pointer-events: all; }
+    100% { opacity: 0; pointer-events: none; }
 }
 
 /* ===== CONTAINER SPACING ===== */
