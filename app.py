@@ -25,16 +25,22 @@ import uuid
 SECRET_KEY = b"MUZAFFER_CINAR_2026_MASTER_KEY"
 
 def get_device_id():
-    """Tarayıcı oturumu için kalıcı olmayan ama session süresince sabit bir ID üretir"""
-    if 'device_id' not in st.session_state:
-        # Rastgele bir UUID üret (Gerçek uygulamada LocalStorage kullanılır)
-        st.session_state.device_id = str(uuid.uuid4())[:8].upper()
-    return st.session_state.device_id
+    """Tarayıcı bilgilerinden (User-Agent) bu cihaza özel sabit bir ID üretir"""
+    try:
+        # Tarayıcı bilgilerini al (User-Agent, Dil, Platform vb.)
+        headers = st.context.headers
+        fingerprint = f"{headers.get('User-Agent', 'UA')}-{headers.get('Accept-Language', 'LANG')}"
+        # Bu bilgiyi hash'leyerek 8 haneli kısa bir kod oluştur
+        return hashlib.md5(fingerprint.encode()).hexdigest()[:8].upper()
+    except:
+        # Hata olursa (örn. yerelde çalışırken) UUID üret
+        if 'device_id' not in st.session_state:
+            st.session_state.device_id = str(uuid.uuid4())[:8].upper()
+        return st.session_state.device_id
 
 def validate_license(device_id, input_key):
     """Girilen anahtarın, bu cihaz ID'si için geçerli olup olmadığını kontrol eder"""
     try:
-        # Doğru anahtarı hesapla
         device_id = device_id.strip().upper()
         signature = hmac.new(SECRET_KEY, device_id.encode('utf-8'), hashlib.sha256).digest()
         license_key = base64.urlsafe_b64encode(signature).decode('utf-8').upper()
@@ -47,11 +53,18 @@ def validate_license(device_id, input_key):
     except:
         return False
 
-# --- GİRİŞ EKRANI ---
+# --- GİRİŞ VE PERSİSTENCE (KALICILIK) KONTROLÜ ---
 if 'authenticated' not in st.session_state:
     st.session_state.authenticated = False
 
 device_id = get_device_id()
+
+# URL'den otomatik kontrol (Daha önce girilmişse hatırlasın)
+if not st.session_state.authenticated:
+    query_params = st.query_params
+    if "key" in query_params:
+        if validate_license(device_id, query_params["key"]):
+            st.session_state.authenticated = True
 
 if not st.session_state.authenticated:
     st.markdown("""
@@ -82,6 +95,8 @@ if not st.session_state.authenticated:
     if st.button("🔓 GİRİŞ YAP"):
         if validate_license(device_id, license_input):
             st.session_state.authenticated = True
+            # Şifreyi URL'ye kaydet (Böylece sayfa yenilense de hatırlar)
+            st.query_params["key"] = license_input.strip().upper()
             st.success("Lisans Doğrulandı! Yönlendiriliyorsunuz...")
             st.balloons()
             st.rerun()
