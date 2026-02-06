@@ -1,0 +1,296 @@
+[
+    {
+        "q": "YAPAY ZEKA (GÜNCEL): 2024 yılında Avrupa Birliği'nin kabul ettiği dünyadaki ilk kapsamlı yapay zeka yasası hangisidir?",
+        "a": "AI Act (Yapay Zeka Yasası).",
+        "key": "AI Act",
+        "cat": "Güncel"
+    },
+    {
+        "q": "YAPAY ZEKA (MEVZUAT): Anayasa'nın 42. maddesine göre hürriyetlerin kötüye kullanılamayacağı temel ilke nedir?",
+        "a": "Eğitim ve Öğrenim Hakkı.",
+        "key": "Eğitim Hakkı",
+        "cat": "Mevzuat"
+    },
+    {
+        "q": "YAPAY ZEKA (TARİH): Osmanlı Devleti'nde ilk dış borçlanma hangi savaş sırasında yapılmıştır?",
+        "a": "Kırım Savaşı (1853-1856).",
+        "key": "Kırım Savaşı",
+        "cat": "Tarih"
+    },
+    {
+        "q": "YAPAY ZEKA (PEDAGOJİ): Çoklu Zeka Kuramı'na göre 'doğa zekası' yüksek olan bir öğrenci için en uygun öğretim yöntemi nedir?",
+        "a": "Gözlem gezileri ve sınıf dışı etkinlikler.",
+        "key": "Doğa / Gözlem",
+        "cat": "Pedagoji"
+    },
+    {
+        "q": "YAPAY ZEKA (PROTOKOL): Resmi bir araçta protokol sırasına göre '2 numaralı makam' neresidir?",
+        "a": "Makam sahibinin sol arka tarafı.",
+        "key": "Sol Arka",
+        "cat": "Protokol"
+    },
+    {
+        "q": "YAPAY ZEKA (GÜNCEL): Türkiye'nin yerli ve milli ilk insanlı savaş uçağının adı nedir?",
+        "a": "KAAN.",
+        "key": "KAAN",
+        "cat": "Güncel"
+    },
+    {
+        "q": "YAPAY ZEKA (MEVZUAT): 1 sayılı Cumhurbaşkanlığı Kararnamesi ile MEB teşkilat yapısında 'Talim ve Terbiye Kurulu'nun statüsü nedir?",
+        "a": "Doğrudan Bakana bağlı bir danışma ve karar organıdır.",
+        "key": "Bakana Bağlı",
+        "cat": "Mevzuat"
+    },
+    {
+        "q": "YAPAY ZEKA (TARİH): Türkiye'nin NATO'ya üye olduğu yıl hangisidir?",
+        "a": "1952.",
+        "key": "1952",
+        "cat": "Tarih"
+    },
+    {
+        "q": "YAPAY ZEKA (PEDAGOJİ): Öğrencinin hazırbulunuşluk düzeyine göre öğretimin zorluk derecesinin ayarlanması hangi ilkedir?",
+        "a": "Düzeye Uygunluk (Göre'lik).",
+        "key": "Düzeye Uygunluk",
+        "cat": "Pedagoji"
+    },
+    {
+        "q": "YAPAY ZEKA (PROTOKOL): Bayrak Kanunu'na göre Türk Bayrağı yırtık, sökük veya rengi solmuş şekilde asılabilir mi?",
+        "a": "Hayır, manevi değeri zedeleyecek şekilde kullanılamaz.",
+        "key": "Yasak",
+        "cat": "Protokol"
+    },
+    {
+        "q": "YAPAY ZEKA (GÜNCEL): 2024 Yaz Olimpiyatları hangi şehirde düzenlenmiştir?",
+        "a": "Paris.",
+        "key": "Paris 2024",
+        "cat": "Güncel"
+    },
+    {
+        "q": "YAPAY ZEKA (MEVZUAT): 657 DMK'ya göre 'Müsteşar' unvanı kaldırıldıktan sonra bakanlıkta en üst idari amir kimdir?",
+        "a": "Bakan Yardımcısı (İdari olarak en üst memur statüsü değişmiştir, ancak hiyerarşide Bakan'dan sonra gelir).",
+        "key": "Bakan Yrd",
+        "cat": "Mevzuat"
+    },
+    {
+        "q": "YAPAY ZEKA (TARİH): Hatay'ın anavatana katılması hangi yıl gerçekleşmiştir?",
+        "a": "1939.",
+        "key": "1939",
+        "cat": "Tarih"
+    },
+    {
+        "q": "YAPAY ZEKA (PEDAGOJİ): Bilişsel Çıraklık yönteminde öğretmenin desteğini yavaş yavaş çekmesi sürecine ne denir?",
+        "a": "Bilişsel Destek (Scaffolding) / İskele Kurma.",
+        "key": "İskele Kurma",
+        "cat": "Pedagoji"
+    },
+    {
+        "q": "YAPAY ZEKA (PROTOKOL): Resmi yemeklerde ev sahibinin (davet sahibinin) eşi masada nereye oturur?",
+        "a": "Davet sahibinin tam karşısına.",
+        "key": "Tam Karşı",
+        "cat": "Protokol"
+    },
+    {
+        "q": "YAPAY ZEKA (GENEL KÜLTÜR): 'Düşünüyorum, öyleyse varım' sözü kime aittir?",
+        "a": "Descartes.",
+        "key": "Descartes",
+        "cat": "Güncel"
+    },
+    {
+        "q": "YAPAY ZEKA (MEVZUAT): 222 Sayılı İlköğretim Kanunu'na göre mecburi ilköğretim çağı hangi yaş grubunu kapsar?",
+        "a": "6-14 yaş.",
+        "key": "6-14 Yaş",
+        "cat": "Mevzuat"
+    },
+    {
+        "q": "YAPAY ZEKA (TARİH): UNESCO Dünya Mirası Listesi'nde yer alan 'Göbeklitepe' hangi ilimizdedir?",
+        "a": "Şanlıurfa.",
+        "key": "Şanlıurfa",
+        "cat": "Tarih"
+    },
+    {
+        "q": "YAPAY ZEKA (PEDAGOJİ): Eğitimde 'Tam Öğrenme Modeli'nin (Bloom) temel varsayımı nedir?",
+        "a": "Uygun koşullar sağlanırsa herkes her şeyi öğrenebilir.",
+        "key": "Herkes Öğrenir",
+        "cat": "Pedagoji"
+    },
+    {
+        "q": "YAPAY ZEKA (PROTOKOL): Makam odasına girildiğinde oturulacak yer neresidir?",
+        "a": "Makam sahibinin işaret ettiği veya masanın önündeki koltuklar.",
+        "key": "İşaret Edilen",
+        "cat": "Protokol"
+    },
+    {
+        "q": "YAPAY ZEKA (MEVZUAT): 657 DMK - Hediye alma yasağının kapsamını hangi kurul belirler?",
+        "a": "Kamu Görevlileri Etik Kurulu.",
+        "key": "Etik Kurulu",
+        "cat": "Mevzuat"
+    },
+    {
+        "q": "YAPAY ZEKA (GÜNCEL): 'Kürk Mantolu Madonna' eserinin yazarı kimdir?",
+        "a": "Sabahattin Ali.",
+        "key": "Sabahattin Ali",
+        "cat": "Güncel"
+    },
+    {
+        "q": "YAPAY ZEKA (TARİH): Mustafa Kemal'e 'Gazilik' unvanı ve 'Mareşallik' rütbesi hangi savaştan sonra verilmiştir?",
+        "a": "Sakarya Meydan Muharebesi.",
+        "key": "Sakarya",
+        "cat": "Tarih"
+    },
+    {
+        "q": "YAPAY ZEKA (PROTOKOL): Resmi yazılarda 'Arz ederim' ifadesi kime karşı kullanılır?",
+        "a": "Üst makama veya denk makama (nezaketen) yazarken.",
+        "key": "Üst/Denk",
+        "cat": "Protokol"
+    },
+    {
+        "q": "YAPAY ZEKA (PEDAGOJİ): 'Öğrenilmiş Çaresizlik' kavramı kime aittir?",
+        "a": "Seligman.",
+        "key": "Seligman",
+        "cat": "Pedagoji"
+    },
+    {
+        "q": "YAPAY ZEKA (MEVZUAT): 1739 Sayılı Kanun'a göre Türk Milli Eğitimi'nin genel amaçlarından biri 'İyi bir ... yetiştirmektir'?",
+        "a": "Vatandaş.",
+        "key": "Vatandaş",
+        "cat": "Mevzuat"
+    },
+    {
+        "q": "YAPAY ZEKA (GÜNCEL): 2023 yılında UNESCO Dünya Mirası Listesi'ne giren 'Gordion' antik kenti nerededir?",
+        "a": "Ankara (Polatlı).",
+        "key": "Ankara",
+        "cat": "Güncel"
+    },
+    {
+        "q": "YAPAY ZEKA (TARİH): Osmanlı'da 'Mebusan Meclisi'nin açılmasını sağlayan gelişme?",
+        "a": "I. Meşrutiyet'in ilanı (1876).",
+        "key": "I. Meşrutiyet",
+        "cat": "Tarih"
+    },
+    {
+        "q": "YAPAY ZEKA (PROTOKOL): Kravatın ucu nerede bitmelidir?",
+        "a": "Kemer tokasının yarısını kapatacak şekilde.",
+        "key": "Kemer Tokası",
+        "cat": "Protokol"
+    },
+    {
+        "q": "YAPAY ZEKA (MEVZUAT): Yurt dışı sürekli görev süresi kural olarak kaç yıldır?",
+        "a": "3 Yıl.",
+        "key": "3 Yıl",
+        "cat": "Mevzuat"
+    },
+    {
+        "q": "YAPAY ZEKA (GÜNCEL): Türkiye'nin insanlı ilk uzay misyonunu gerçekleştiren astronot?",
+        "a": "Alper Gezeravcı.",
+        "key": "Alper Gezeravcı",
+        "cat": "Güncel"
+    },
+    {
+        "q": "YAPAY ZEKA (PEDAGOJİ): Maslow'un İhtiyaçlar Hiyerarşisi'nde en tabanda ne vardır?",
+        "a": "Fizyolojik İhtiyaçlar.",
+        "key": "Fizyolojik",
+        "cat": "Pedagoji"
+    },
+    {
+        "q": "YAPAY ZEKA (TARİH): Lozan Barış Antlaşması'nı TBMM adına kim imzalamıştır?",
+        "a": "İsmet İnönü.",
+        "key": "İsmet İnönü",
+        "cat": "Tarih"
+    },
+    {
+        "q": "YAPAY ZEKA (MEVZUAT): 4982 Bilgi Edinme Kanunu'na göre, bilgi edinme istemi reddedilen kişi nereye itiraz eder?",
+        "a": "Bilgi Edinme Değerlendirme Kurulu (BEDK).",
+        "key": "BEDK",
+        "cat": "Mevzuat"
+    },
+    {
+        "q": "YAPAY ZEKA (GÜNCEL): Dünyanın 'sıfır noktası' olarak kabul edilen Göbeklitepe hangi dindedir?",
+        "a": "Herhangi bir dinle ilişkilendirilmemiştir (Tarih öncesi inanç merkezi).",
+        "key": "Tarih Öncesi",
+        "cat": "Güncel"
+    },
+    {
+        "q": "YAPAY ZEKA (PROTOKOL): Resmi araçta 'Makam Forsu' ne zaman çekilir?",
+        "a": "Makam sahibi araçta iken.",
+        "key": "Araçta İken",
+        "cat": "Protokol"
+    },
+    {
+        "q": "YAPAY ZEKA (PEDAGOJİ): Eğitimde 'Sarmal Programlama' yaklaşımı (Bruner) neyi ifade eder?",
+        "a": "Konuların yıllar içinde genişleyerek ve derinleşerek tekrar edilmesi.",
+        "key": "Sarmal / Tekrar",
+        "cat": "Pedagoji"
+    },
+    {
+        "q": "YAPAY ZEKA (MEVZUAT): 657 DMK - Memurluktan çekilenler (istifa) kaç ay sonra dönebilir?",
+        "a": "6 Ay sonra.",
+        "key": "6 Ay",
+        "cat": "Mevzuat"
+    },
+    {
+        "q": "YAPAY ZEKA (TARİH): Mondros Ateşkes Antlaşması'nı Osmanlı adına kim imzalamıştır?",
+        "a": "Rauf Orbay.",
+        "key": "Rauf Orbay",
+        "cat": "Tarih"
+    },
+    {
+        "q": "YAPAY ZEKA (GÜNCEL): 'Yüzyılın Felaketi' olarak adlandırılan 6 Şubat depremlerinin merkezi olan iller?",
+        "a": "Kahramanmaraş (Pazarcık ve Elbistan).",
+        "key": "Kahramanmaraş",
+        "cat": "Güncel"
+    },
+    {
+        "q": "YAPAY ZEKA (PROTOKOL): Törenlerde İstiklal Marşı okunurken nasıl durulur?",
+        "a": "Hazırol duruşunda, cepheye dönerek ve hareket etmeden.",
+        "key": "Hazırol",
+        "cat": "Protokol"
+    },
+    {
+        "q": "YAPAY ZEKA (MEVZUAT): 5018 SK - Üst yöneticiler (Bakanlar vb.) bütçe kullanımıyla ilgili kime hesap verir?",
+        "a": "Cumhurbaşkanına.",
+        "key": "Cumhurbaşkanı",
+        "cat": "Mevzuat"
+    },
+    {
+        "q": "YAPAY ZEKA (PEDAGOJİ): 'Gizil Öğrenme' (Tolman) nedir?",
+        "a": "Farkında olmadan, amaçsızca gerçekleşen öğrenme.",
+        "key": "Gizil / Farkında Olmadan",
+        "cat": "Pedagoji"
+    },
+    {
+        "q": "YAPAY ZEKA (TARİH): Atatürk'ün 'Benim şahsi meselemdir' dediği konu?",
+        "a": "Hatay Sorunu.",
+        "key": "Hatay",
+        "cat": "Tarih"
+    },
+    {
+        "q": "YAPAY ZEKA (GÜNCEL): Türkiye'nin ilk yerli gözlem uydusu?",
+        "a": "RASAT (veya İMECE).",
+        "key": "RASAT/İMECE",
+        "cat": "Güncel"
+    },
+    {
+        "q": "YAPAY ZEKA (MEVZUAT): Okul Aile Birlikleri hangi yönetmeliğe göre kurulur?",
+        "a": "MEB Okul-Aile Birliği Yönetmeliği.",
+        "key": "OAB Yönetmeliği",
+        "cat": "Mevzuat"
+    },
+    {
+        "q": "YAPAY ZEKA (PEDAGOJİ): 'Balık Kılçığı' (Ishikawa) diyagramı ne için kullanılır?",
+        "a": "Neden-Sonuç ilişkilerini belirlemek için.",
+        "key": "Neden-Sonuç",
+        "cat": "Pedagoji"
+    },
+    {
+        "q": "YAPAY ZEKA (PROTOKOL): Resmi yazılarda imza, ismin neresine atılır?",
+        "a": "İsmin üzerine.",
+        "key": "İsim Üstü",
+        "cat": "Protokol"
+    },
+    {
+        "q": "YAPAY ZEKA (GÜNCEL): İklim değişikliği ile mücadele eden 'Greta Thunberg' hangi ülkedendir?",
+        "a": "İsveç.",
+        "key": "İsveç",
+        "cat": "Güncel"
+    }
+]
