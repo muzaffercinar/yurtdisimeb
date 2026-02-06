@@ -632,49 +632,23 @@ current_time = time.time()
 is_demo_expired = False
 remaining_time = 0
 elapsed_time = 0 
-waiting_for_fingerprint = False
 
-# --- 1. JAVASCRIPT: Cihaz Parmak İzi (FingerprintJS) ---
+# --- KULLANICI KİMLİĞİ (Basitleştirilmiş) ---
 if not url_did:
-    # Fingerprint bekleniyor, demo başlatma
-    waiting_for_fingerprint = True
-    js_code = """
-    <script>
-        // Önce localStorage'dan kontrol et
-        let localDid = localStorage.getItem('ufomath_demo_id');
-        if (localDid) {
-            // Var olan ID'yi kullan
-            if (!window.location.search.includes('did=')) {
-                window.parent.location.href = window.parent.location.href.split('?')[0] + '?did=' + localDid;
-            }
-        } else {
-            // Yeni ID oluştur ve kaydet
-            const fpPromise = import('https://openfpcdn.io/fingerprintjs/v3')
-                .then(FingerprintJS => FingerprintJS.load());
+    # Session state'te ID var mı?
+    if "demo_id" not in st.session_state:
+        # Yeni random ID oluştur
+        new_id = "USER-" + str(uuid.uuid4())[:8].upper()
+        st.session_state.demo_id = new_id
+    
+    # URL'ye ID'yi ekle ve yönlendir
+    st.query_params["did"] = st.session_state.demo_id
+    st.rerun()
 
-            fpPromise
-                .then(fp => fp.get())
-                .then(result => {
-                    const visitorId = result.visitorId;
-                    localStorage.setItem('ufomath_demo_id', visitorId);
-                    window.parent.location.href = window.parent.location.href.split('?')[0] + '?did=' + visitorId;
-                })
-                .catch(error => {
-                    let newDid = 'DEMO-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-                    localStorage.setItem('ufomath_demo_id', newDid);
-                    window.parent.location.href = window.parent.location.href.split('?')[0] + '?did=' + newDid;
-                });
-        }
-    </script>
-    """
-    st.components.v1.html(js_code, height=0)
-    identifier = None  # Henüz kimlik yok
-else:
-    identifier = url_did
-    waiting_for_fingerprint = False
+identifier = url_did if url_did else st.session_state.get("demo_id", None)
 
-# --- 3. SÜRE KONTROLÜ (Sadece geçerli identifier varsa) ---
-if not st.session_state.authenticated and identifier and not waiting_for_fingerprint:
+# --- SÜRE KONTROLÜ ---
+if not st.session_state.authenticated and identifier:
     if identifier in demo_tracker:
         start_time = demo_tracker[identifier]
         elapsed_time = current_time - start_time
@@ -690,13 +664,6 @@ if not st.session_state.authenticated and identifier and not waiting_for_fingerp
 
 # === EKRAN ÇİZİMİ ===
 if not st.session_state.authenticated:
-    # Fingerprint bekleniyor ise yükleme ekranı göster
-    if waiting_for_fingerprint or identifier is None:
-        st.markdown(f"<div style='text-align: center;'>{logo_html}</div>", unsafe_allow_html=True)
-        st.markdown("<h2 style='text-align: center;'>🔄 Yükleniyor...</h2>", unsafe_allow_html=True)
-        st.info("Lütfen bekleyin, cihaz doğrulanıyor...")
-        st.stop()
-    
     if is_demo_expired:
         st.markdown('<div class="login-box">', unsafe_allow_html=True)
         st.markdown(logo_html, unsafe_allow_html=True)
