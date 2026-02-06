@@ -494,8 +494,62 @@ if not st.session_state.authenticated:
             st.session_state.authenticated = True
             st.session_state.user_code = query_params["user"]
 
-# === PREMIUM GİRİŞ EKRANI ===
+# --- PREMİUM LOGO (SVG) ---
+LOGO_SVG = """
+<svg width="150" height="150" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3c72;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2a5298;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="90" fill="url(#grad1)" stroke="white" stroke-width="5"/>
+  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="'Arial', sans-serif" font-weight="bold" font-size="80" fill="white" letter-spacing="-5">MC</text>
+  <text x="50%" y="85%" dominant-baseline="middle" text-anchor="middle" font-family="'Arial', sans-serif" font-size="20" fill="white" letter-spacing="5">AKADEMİ</text>
+</svg>
+"""
+
+# Logo'yu Base64'e çevir (Görüntülemek için)
+import base64
+logo_b64 = base64.b64encode(LOGO_SVG.encode('utf-8')).decode("utf-8")
+logo_html = f'<img src="data:image/svg+xml;base64,{logo_b64}" width="150">'
+
+# === GELİŞMİŞ DEMO TAKİP SİSTEMİ (SUNUCU TARAFLI) ===
+import uuid
+
+@st.cache_resource
+def get_demo_tracker():
+    """Tüm kullanıcıların demo sürelerini sunucu hafızasında tutar."""
+    return {}
+
+demo_tracker = get_demo_tracker()
+demo_duration = 60  # 60 saniye
+
+# Demo ID (did) ve Başlangıç Zamanı Kontrolü
+current_time = time.time()
+user_did = st.query_params.get("did", None)
+is_demo_expired = False
+remaining_time = 0
+
 if not st.session_state.authenticated:
+    if user_did and user_did in demo_tracker:
+        # Mevcut kullanıcı: Süreyi kontrol et
+        start_time = demo_tracker[user_did]
+        elapsed = current_time - start_time
+        if elapsed > demo_duration:
+            is_demo_expired = True
+        else:
+            remaining_time = int(demo_duration - elapsed)
+    else:
+        # Yeni kullanıcı veya ID'si silinmiş: Yeni ID ver ve başlat
+        new_did = str(uuid.uuid4())[:8]  # Kısa UUID
+        demo_tracker[new_did] = current_time
+        st.query_params["did"] = new_did
+        # Sayfayı yenile ki URL güncellensin (kullanıcı ID'yi görsün)
+        st.rerun()
+
+# Giriş yapılmamış VE Demo dolmuşsa -> ENGELLE
+if not st.session_state.authenticated and is_demo_expired:
     # --- CSS STİLLERİ ---
     st.markdown("""
     <style>
@@ -512,7 +566,12 @@ if not st.session_state.authenticated:
         100% {background-position: 0% 50%;}
     }
     
-    /* Cam Efekti (Glassmorphism) Kart */
+    /* Streamlit Markasını Gizle */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
+    /* Cam Efekti Kart */
     .login-box {
         background: rgba(255, 255, 255, 0.15);
         box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
@@ -574,10 +633,13 @@ if not st.session_state.authenticated:
     
     # --- LOGO VE BAŞLIK ---
     st.markdown('<div class="login-box">', unsafe_allow_html=True)
-    st.image("https://cdn-icons-png.flaticon.com/512/2913/2913133.png", width=120)
-    st.markdown("<h1>MC MEB PRO</h1>", unsafe_allow_html=True)
+    st.markdown(logo_html, unsafe_allow_html=True)
+    st.markdown("<h1>MC AKADEMİ</h1>", unsafe_allow_html=True)
     st.markdown("<h3>Yurt Dışı Öğretmenlik Sınav Hazırlık</h3>", unsafe_allow_html=True)
-    st.markdown("<p>Premium Eğitim Seti • 2026 Özel Sürüm</p>", unsafe_allow_html=True)
+    
+    # Süre doldu mesajı
+    st.error("⏳ Ücretsiz deneme süreniz (1 dakika) doldu.")
+    st.markdown("<p>Devam etmek için lütfen giriş yapın.</p>", unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
     
     # --- GİRİŞ FORMU ---
@@ -616,7 +678,17 @@ if not st.session_state.authenticated:
     st.markdown('</div>', unsafe_allow_html=True)
     st.stop()
 
-# === ANA UYGULAMA (GİRİŞ BAŞARILI) ===
+elif not st.session_state.authenticated:
+    # Demo modu devam ediyor - Sorunsuz gezinme için geçici izin
+    remaining_time = int(demo_duration - elapsed_time)
+    st.info(f"⏳ **DENEME MODU:** Uygulamayı ücretsiz inceliyorsunuz. Kalan Süre: **{remaining_time} saniye**")
+    
+    # Hata almamak için geçici kullanıcı kodu tanımla
+    if "user_code" not in st.session_state:
+        st.session_state.user_code = "MİSAFİR"
+
+# === GİRİŞ BAŞARILI (veya DEMO MODU AKTİF) ===
+
 
 all_questions = load_questions()
 ai_questions = load_ai_questions()
@@ -650,7 +722,17 @@ def next_question(correct):
 
 # === ANA MENÜ ===
 if st.session_state.mode == "menu":
-    st.markdown("## 🎯 ÇALIŞMA MODUNU SEÇİN")
+    # Streamlit Markasını Gizle
+    st.markdown("""
+        <style>
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+        header {visibility: hidden;}
+        </style>
+    """, unsafe_allow_html=True)
+    
+    st.markdown(f"<div style='text-align: center;'>{logo_html}</div>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align: center;'>🎯 ÇALIŞMA MODUNU SEÇİN</h2>", unsafe_allow_html=True)
     st.divider()
     
     col1, col2 = st.columns(2)
