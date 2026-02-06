@@ -597,6 +597,7 @@ h1, h2, h3 {
 """, unsafe_allow_html=True)
 
 # === GELİŞMİŞ DEMO TAKİP SİSTEMİ ===
+# === GELİŞMİŞ DEMO TAKİP SİSTEMİ ===
 import uuid
 
 @st.cache_resource
