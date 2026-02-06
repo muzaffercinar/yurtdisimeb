@@ -959,52 +959,49 @@ if st.session_state.mode == "menu":
 
     # Compact Divider
     st.markdown("<hr style='margin: 10px 0; border: 0; border-top: 1px solid rgba(255,255,255,0.3);'>", unsafe_allow_html=True)
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("📚 GENEL SINAV\n[Pro 🔒]", use_container_width=True):
-            if not st.session_state.authenticated:
-                st.error("🔒 Bu modülü kullanmak için lisans gerekli! Lütfen giriş yapınız.")
-            else:
-                start_mode("exam", all_questions)
-                st.rerun()
-        if st.button("🤖 AI DESTEKLİ (1000 Soruluk Benzer Sorular)\n[Pro 🔒]", use_container_width=True):
-            if not st.session_state.authenticated:
-                st.error("🔒 Bu modülü kullanmak için lisans gerekli! Lütfen giriş yapınız.")
-            elif ai_questions:
-                start_mode("exam", ai_questions)
-                st.rerun()
-            else:
-                st.error("AI soru dosyası bulunamadı!")
-    with col2:
-        if st.button("⏱️ DENEME SINAVI\n(Demo: ilk 20 soru)", use_container_width=True, type="primary"):
-            if not st.session_state.authenticated:
-                # Demo: Sadece ilk 20 soruyu gösterir (Asıl kontrol döngüde)
-                # Tüm soruları yüklesek de 20. soruda durduracağız.
-                # Karışıklık olmasın diye 20 tane sample da alabiliriz ama 
-                # kullanıcıya "devamı var" hissi vermek için hepsini yükleyip yarıda kesmek daha etkili olabilir.
-                # Ancak performans için 20 tane alalım.
-                sample = random.sample(all_questions, min(len(all_questions), 200)) # Biraz fazla al, 20'de kes
-                start_mode("exam", sample)
-                st.rerun()
-            else:
-                # Lisanslı: 100 soru
-                sample = random.sample(all_questions, min(100, len(all_questions)))
-                start_mode("exam", sample)
-                st.rerun()
-        if st.button("💡 HAP BİLGİ\n[Pro 🔒]", use_container_width=True):
-            if not st.session_state.authenticated:
-                st.error("🔒 Bu modülü kullanmak için lisans gerekli! Lütfen giriş yapınız.")
-            elif hap_questions:
-                start_mode("exam", hap_questions)
-                st.rerun()
-            else:
+    # Stack buttons vertically for uniform width
+    if st.button("📚 GENEL SINAV\n[Pro 🔒]", use_container_width=True):
+        if not st.session_state.authenticated:
+            st.error("🔒 Bu modülü kullanmak için lisans gerekli! Lütfen giriş yapınız.")
+        else:
+            start_mode("exam", all_questions)
+            st.rerun()
+
+    if st.button("⏱️ DENEME SINAVI\n(Demo: ilk 20 soru)", use_container_width=True, type="primary"):
+        if not st.session_state.authenticated:
+            # Demo: Sadece ilk 20 soruyu gösterir (Asıl kontrol döngüde)
+            sample = random.sample(all_questions, min(len(all_questions), 200)) # Biraz fazla al, 20'de kes
+            start_mode("exam", sample)
+            st.rerun()
+        else:
+            # Lisanslı: 100 soru
+            sample = random.sample(all_questions, min(100, len(all_questions)))
+            start_mode("exam", sample)
+            st.rerun()
+
+    if st.button("🤖 AI DESTEKLİ (1000 Soruluk Benzer Sorular)\n[Pro 🔒]", use_container_width=True):
+        if not st.session_state.authenticated:
+            st.error("🔒 Bu modülü kullanmak için lisans gerekli! Lütfen giriş yapınız.")
+        elif ai_questions:
+            start_mode("exam", ai_questions)
+            st.rerun()
+        else:
+            st.error("AI soru dosyası bulunamadı!")
+
+    if st.button("💡 HAP BİLGİ\n[Pro 🔒]", use_container_width=True):
+        if not st.session_state.authenticated:
+            st.error("🔒 Bu modülü kullanmak için lisans gerekli! Lütfen giriş yapınız.")
+        elif hap_questions:
+            start_mode("exam", hap_questions)
+            st.rerun()
+        else:
                 st.error("Hap bilgi dosyası bulunamadı!")
     
     # Compact Divider
     st.markdown("<hr style='margin: 10px 0; border: 0; border-top: 1px solid rgba(255,255,255,0.3);'>", unsafe_allow_html=True)
     st.markdown("### 📂 Kategoriye Göre Çalış")
     selected_cat = st.selectbox("Kategori Seçin", ["Tümü"] + categories)
-    if st.button("Seçili Kategori ile Başla"):
+    if st.button("Seçili Kategori ile Başla", use_container_width=True):
         if not st.session_state.authenticated:
             st.error("🔒 Bu modülü kullanmak için lisans gerekli! Lütfen giriş yapınız.")
         elif selected_cat == "Tümü":
