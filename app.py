@@ -682,8 +682,8 @@ p, span, div {
 div.stButton > button {
     width: 100% !important;
     border-radius: 12px !important;
-    min-height: 3.5rem !important;
-    height: auto !important;
+    height: 4rem !important; /* Fixed height for all buttons */
+    min-height: 4rem !important;
     font-weight: 600 !important;
     transition: all 0.3s ease !important;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
