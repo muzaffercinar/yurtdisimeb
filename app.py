@@ -628,6 +628,7 @@ if not st.session_state.authenticated:
         st.markdown("""
         <div class="contact-info">
             <p>📧 ufomath@gmail.com | 📱 0505 446 51 98</p>
+            <h3 style="color: #fff; margin: 10px 0;">⬆️ LİSANS ANAHTARI TALEP ET ⬆️</h3>
             <hr>
             <a href="https://wa.me/?text=Merhaba%2C%20https%3A%2F%2Fyurtdisimebhazirlik.streamlit.app" target="_blank">
                 <button style="background-color: #25D366; color: white; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 20px;">
@@ -746,6 +747,18 @@ if st.session_state.mode == "menu":
             filtered = [q for q in all_questions if q.get("cat") == selected_cat]
             start_mode("exam", filtered)
             st.rerun()
+
+    # WHATSAPP SHARE BUTTON - MAIN PAGE FOOTER
+    st.markdown("""
+    <div style="margin-top: 30px; margin-bottom: 20px;">
+        <a href="https://wa.me/?text=Yurt%20dışı%20öğretmenlik%20sınav%20hazırlık%20uygulamasına%20gözatmak%20istermisiniz%20https%3A%2F%2Fyurtdisimebhazirlik.streamlit.app" target="_blank">
+            <button style="background-color: #25D366; color: white; border: none; padding: 12px 20px; border-radius: 50px; font-weight: bold; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+                <img src="https://cdn-icons-png.flaticon.com/512/1384/1384007.png" width="20" style="filter: brightness(0) invert(1);">
+                Arkadaşına Linki Gönder 🚀
+            </button>
+        </a>
+    </div>
+    """, unsafe_allow_html=True)
             
     # COPYRIGHT FOOTER
     st.markdown("---")
@@ -766,7 +779,7 @@ if st.session_state.mode == "menu":
     st.sidebar.markdown("---")
     st.sidebar.markdown("### 📢 Paylaş")
     st.sidebar.markdown("""
-    <a href="https://wa.me/?text=Merhaba%2C%20Yurt%20Dışı%20Öğretmenlik%20Sınavı%20için%20harika%20bir%20kaynak%20buldum!%20Hemen%20incelemek%20için:%20https%3A%2F%2Fyurtdisimebhazirlik.streamlit.app" target="_blank">
+    <a href="https://wa.me/?text=Yurt%20dışı%20öğretmenlik%20sınav%20hazırlık%20uygulamasına%20gözatmak%20istermisiniz%20https%3A%2F%2Fyurtdisimebhazirlik.streamlit.app" target="_blank">
         <button style="background-color: #25D366; color: white; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 20px;">
             <img src="https://cdn-icons-png.flaticon.com/512/1384/1384007.png" width="16" style="filter: brightness(0) invert(1);">
             WhatsApp ile Paylaş
