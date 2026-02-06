@@ -664,8 +664,9 @@ if not st.session_state.authenticated:
         remaining_time = demo_duration
 
 # === EKRAN ÇİZİMİ (Süre dolduysa veya Giriş Ekranı) ===
+# === EKRAN ÇİZİMİ (Süre dolduysa veya Demo devam ediyorsa) ===
 if not st.session_state.authenticated:
-    # Eğer süre dolduysa -> ENGELLE
+    # A) SÜRE BİTMİŞSE -> ENGELLE
     if is_demo_expired:
         st.markdown('<div class="login-box">', unsafe_allow_html=True)
         st.markdown(logo_html, unsafe_allow_html=True)
@@ -702,16 +703,15 @@ if not st.session_state.authenticated:
         
         st.markdown('</div>', unsafe_allow_html=True)
         st.stop()
-
-
-elif not st.session_state.authenticated:
-    # Demo modu devam ediyor - Sorunsuz gezinme için geçici izin
-    remaining_time = int(demo_duration - elapsed_time)
-    st.info(f"⏳ **DENEME MODU:** Uygulamayı ücretsiz inceliyorsunuz. Kalan Süre: **{remaining_time} saniye**")
     
-    # Hata almamak için geçici kullanıcı kodu tanımla
-    if "user_code" not in st.session_state:
-        st.session_state.user_code = "MİSAFİR"
+    # B) SÜRE VARSA -> SAYACI GÖSTER
+    else:
+        remaining_time = int(demo_duration - elapsed_time)
+        st.info(f"⏳ **DENEME MODU:** Uygulamayı ücretsiz inceliyorsunuz. Kalan Süre: **{remaining_time} saniye**")
+        
+        # Hata almamak için geçici kullanıcı kodu tanımla
+        if "user_code" not in st.session_state:
+            st.session_state.user_code = "MİSAFİR"
 
 # === GİRİŞ BAŞARILI (veya DEMO MODU AKTİF) ===
 
