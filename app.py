@@ -18,31 +18,16 @@ def load_data():
 import hashlib
 import hmac
 import base64
-import uuid
 
-# --- CİHAZ KİLİTLEME SİSTEMİ ---
+# --- KULLANICI KODU SİSTEMİ ---
 # Bu "SECRET_KEY", lisans_ureteci.py dosyasındaki ile AYNI olmalıdır!
 SECRET_KEY = b"MUZAFFER_CINAR_2026_MASTER_KEY"
 
-def get_device_id():
-    """Tarayıcı bilgilerinden (User-Agent) bu cihaza özel sabit bir ID üretir"""
+def validate_license(user_code, input_key):
+    """Girilen anahtarın, bu kullanıcı kodu için geçerli olup olmadığını kontrol eder"""
     try:
-        # Tarayıcı bilgilerini al (User-Agent, Dil, Platform vb.)
-        headers = st.context.headers
-        fingerprint = f"{headers.get('User-Agent', 'UA')}-{headers.get('Accept-Language', 'LANG')}"
-        # Bu bilgiyi hash'leyerek 8 haneli kısa bir kod oluştur
-        return hashlib.md5(fingerprint.encode()).hexdigest()[:8].upper()
-    except:
-        # Hata olursa (örn. yerelde çalışırken) UUID üret
-        if 'device_id' not in st.session_state:
-            st.session_state.device_id = str(uuid.uuid4())[:8].upper()
-        return st.session_state.device_id
-
-def validate_license(device_id, input_key):
-    """Girilen anahtarın, bu cihaz ID'si için geçerli olup olmadığını kontrol eder"""
-    try:
-        device_id = device_id.strip().upper()
-        signature = hmac.new(SECRET_KEY, device_id.encode('utf-8'), hashlib.sha256).digest()
+        user_code = user_code.strip().upper()
+        signature = hmac.new(SECRET_KEY, user_code.encode('utf-8'), hashlib.sha256).digest()
         license_key = base64.urlsafe_b64encode(signature).decode('utf-8').upper()
         
         import re
@@ -56,20 +41,21 @@ def validate_license(device_id, input_key):
 # --- GİRİŞ VE PERSİSTENCE (KALICILIK) KONTROLÜ ---
 if 'authenticated' not in st.session_state:
     st.session_state.authenticated = False
-
-device_id = get_device_id()
+if 'user_code' not in st.session_state:
+    st.session_state.user_code = ""
 
 # URL'den otomatik kontrol (Daha önce girilmişse hatırlasın)
 if not st.session_state.authenticated:
     query_params = st.query_params
-    if "key" in query_params:
-        if validate_license(device_id, query_params["key"]):
+    if "user" in query_params and "key" in query_params:
+        if validate_license(query_params["user"], query_params["key"]):
             st.session_state.authenticated = True
+            st.session_state.user_code = query_params["user"]
 
 if not st.session_state.authenticated:
     st.markdown("""
     <style>
-    .stTextInput > div > div > input {text-align: center; letter-spacing: 5px; font-family: monospace;}
+    .stTextInput > div > div > input {text-align: center; letter-spacing: 3px; font-family: monospace;}
     .big-text {font-size: 24px; font-weight: bold; color: #1E88E5; text-align: center;}
     </style>
     """, unsafe_allow_html=True)
@@ -77,31 +63,36 @@ if not st.session_state.authenticated:
     st.image("https://cdn-icons-png.flaticon.com/512/2913/2913133.png", width=100)
     st.title("🔐 Lisans Aktivasyonu")
     
-    st.info("Bu eğitim seti **tek bir cihazda** kullanım için lisanslanmıştır.")
+    st.info("Bu eğitim seti lisanslı kullanıcılar içindir.")
     
-    st.markdown("### Adım 1: Cihaz Kodunuzu Kopyalayın")
-    st.code(device_id, language="text")
+    st.markdown("### Adım 1: Kullanıcı Kodunuzu Girin")
+    st.caption("Satın alma sonrası size verilen kodu girin (örn: MEB001)")
+    user_code_input = st.text_input("Kullanıcı Kodu", placeholder="MEB001", key="user_code_field")
     
-    st.markdown("### Adım 2: Kodu Gönderin ve Şifre Alın")
+    st.markdown("### Adım 2: Aktivasyon Şifrenizi Girin")
+    st.caption("Size e-posta ile gönderilen 6 haneli şifre")
+    license_input = st.text_input("Aktivasyon Şifresi", placeholder="XXXXXX", key="license_field")
     
-    st.warning("⚠️ Güvenlik gereği otomatik mail butonu pasife alınmıştır.")
-    st.info("Lütfen aşağıdaki Cihaz Kodunu kopyalayıp, şu adrese mail atınız:")
-    st.code("ufomath@gmail.com", language="text")
-    st.caption(f"(Konu kısmına 'Lisans Talebi - {device_id}' yazınız)")
+    st.divider()
+    st.markdown("**📧 Henüz şifreniz yok mu?**")
+    st.info("Kullanıcı kodunuzu **ufomath@gmail.com** adresine gönderin, size aktivasyon şifresi gönderelim.")
     
-    st.markdown("### Adım 3: Gelen Şifreyi Girin")
-    license_input = st.text_input("Aktivasyon Şifresi", placeholder="XXXXXX")
-    
-    if st.button("🔓 GİRİŞ YAP"):
-        if validate_license(device_id, license_input):
+    if st.button("🔓 GİRİŞ YAP", use_container_width=True):
+        if not user_code_input.strip():
+            st.error("❌ Lütfen Kullanıcı Kodunuzu girin!")
+        elif not license_input.strip():
+            st.error("❌ Lütfen Aktivasyon Şifrenizi girin!")
+        elif validate_license(user_code_input, license_input):
             st.session_state.authenticated = True
-            # Şifreyi URL'ye kaydet (Böylece sayfa yenilense de hatırlar)
+            st.session_state.user_code = user_code_input.strip().upper()
+            # URL'ye kaydet (Böylece sayfa yenilense de hatırlar)
+            st.query_params["user"] = user_code_input.strip().upper()
             st.query_params["key"] = license_input.strip().upper()
-            st.success("Lisans Doğrulandı! Yönlendiriliyorsunuz...")
+            st.success("✅ Lisans Doğrulandı! Hoş geldiniz...")
             st.balloons()
             st.rerun()
         else:
-            st.error("❌ Hatalı Şifre! Bu şifre bu cihaza ait değil.")
+            st.error("❌ Hatalı Şifre! Bu şifre bu kullanıcı koduna ait değil.")
             
     st.stop()
 
