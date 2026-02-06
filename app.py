@@ -615,19 +615,13 @@ is_demo_expired = False
 remaining_time = 0
 elapsed_time = 0 
 
-# Giriş yapılmamışsa DEMO kontrolü yap
-if not st.session_state.authenticated:
-    # A) URL'de ID YOK -> JS ile kontrol et/yönlendir
-    if not url_did:
-        # Önce boş ekranı doldurmak için LOGO gösterelim
-        st.markdown('<div class="login-box">', unsafe_allow_html=True)
-        st.markdown(logo_html, unsafe_allow_html=True)
-        st.markdown("<h1>MC AKADEMİ</h1>", unsafe_allow_html=True)
-        st.markdown("<p>Yükleniyor...</p>", unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-        
-        js_code = """
-        <script>
+# --- 1. JAVASCRIPT: LocalStorage Kontrolü (ARKA PLANDA) ---
+# Sadece URL'de ID yoksa çalışır. Başarılı olursa sayfayı yeniler.
+# Başarısız olursa (iframe engeli vb.) uygulama Session ID ile devam eder.
+if not url_did:
+    js_code = """
+    <script>
+        try {
             let localDid = localStorage.getItem('bekard_demo_id');
             if (localDid) {
                 window.parent.location.href = window.parent.location.href.split('?')[0] + '?did=' + localDid;
@@ -636,26 +630,38 @@ if not st.session_state.authenticated:
                 localStorage.setItem('bekard_demo_id', localDid);
                 window.parent.location.href = window.parent.location.href.split('?')[0] + '?did=' + localDid;
             }
-        </script>
-        """
-        st.components.v1.html(js_code, height=0)
-        st.stop() # Yönlendirmeyi bekle
+        } catch(e) {
+            console.log("JS Yönlendirme Hatası");
+        }
+    </script>
+    """
+    # Yüksekliği 0 yaparak gizle, st.stop() KULLANMA
+    st.components.v1.html(js_code, height=0)
 
-    # B) URL'de ID VAR -> Süre kontrolü yap
-    else:
-        identifier = url_did
-        if identifier in demo_tracker:
-            start_time = demo_tracker[identifier]
-            elapsed_time = current_time - start_time
-            if elapsed_time > demo_duration:
-                is_demo_expired = True
-                remaining_time = 0
-            else:
-                remaining_time = int(demo_duration - elapsed_time)
+# --- 2. PYTHON KİMLİK BELİRLEME (Non-Blocking) ---
+if url_did:
+    identifier = url_did
+else:
+    # JS henüz çalışmadıysa veya çalışamadıysa Session ID kullan
+    if "temp_did" not in st.session_state:
+        st.session_state.temp_did = "TEMP-" + str(uuid.uuid4())[:8]
+    identifier = st.session_state.temp_did
+
+# --- 3. SÜRE KONTROLÜ ---
+# Sürekli işleyen mantık (JS beklemez)
+if not st.session_state.authenticated:
+    if identifier in demo_tracker:
+        start_time = demo_tracker[identifier]
+        elapsed_time = current_time - start_time
+        if elapsed_time > demo_duration:
+            is_demo_expired = True
+            remaining_time = 0
         else:
-            # Yeni kullanıcı (veya server reset)
-            demo_tracker[identifier] = current_time
-            remaining_time = demo_duration
+            remaining_time = int(demo_duration - elapsed_time)
+    else:
+        # Yeni kullanıcı
+        demo_tracker[identifier] = current_time
+        remaining_time = demo_duration
 
 # === EKRAN ÇİZİMİ (Süre dolduysa veya Giriş Ekranı) ===
 if not st.session_state.authenticated:
