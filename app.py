@@ -481,8 +481,6 @@ if 'index' not in st.session_state:
     st.session_state.index = 0
 if 'score' not in st.session_state:
     st.session_state.score = 0
-if 'timer_end' not in st.session_state:
-    st.session_state.timer_end = None
 if 'show_answer' not in st.session_state:
     st.session_state.show_answer = False
 if 'show_login' not in st.session_state:
@@ -511,9 +509,6 @@ LOGO_SVG = """
 </svg>
 """
 
-# Logo'yu Base64'e çevir (Görüntülemek için)
-import base64
-# === ARAYÜZ, CSS VE LOGO (HER ZAMAN GÖSTERİLSİN) ===
 # Logo'yu Base64'e çevir
 logo_b64 = base64.b64encode(LOGO_SVG.encode('utf-8')).decode("utf-8")
 logo_html = f'<img src="data:image/svg+xml;base64,{logo_b64}" width="150">'
@@ -600,179 +595,16 @@ h1, h2, h3 {
 """, unsafe_allow_html=True)
 
 
-
-# === CANLI SAYAÇ VE CİHAZ TANIMA JS (FINGERPRINT + TIMER) ===
-LIVE_TIMER_JS = """
-<script>
-// --- CİHAZ TANIMA (FINGERPRINT) ---
-function checkDeviceFingerprint() {
-    try {
-        const urlParams = new URLSearchParams(window.parent.location.search);
-        var urlDid = urlParams.get('did');
-        const localDid = localStorage.getItem('demo_did');
-
-        // URL'de 'did' yoksa boş string olarak düşün
-        if (!urlDid) urlDid = "";
-
-        // 1. senaryo: Tarayıcıda ID var ama URL'de yok veya farklı
-        if (localDid && localDid !== urlDid) {
-            // Sonsuz döngü koruması: Zaten oraya gidiyorsak dur
-            if (window.parent.location.href.includes("did=" + localDid)) return;
-            
-            console.log("Eski oturum bulundu, yönlendiriliyor: " + localDid);
-            urlParams.set('did', localDid);
-            window.parent.location.search = urlParams.toString();
-        }
-        // 2. senaryo: Tarayıcıda ID yok, URL'de var -> Kaydet
-        else if (!localDid && urlDid) {
-            console.log("Yeni oturum kaydediliyor: " + urlDid);
-            localStorage.setItem('demo_did', urlDid);
-        }
-    } catch (e) {
-        console.error("Fingerprint error:", e);
-    }
-}
-
-// Sayfa yüklendiğinde DEĞİL, biraz gecikmeli çalıştır ki URL tam otursun
-setTimeout(checkDeviceFingerprint, 500);
-
-// --- CANLI SAYAÇ ---
-function startTimer(duration, display) {
-    var timer = duration, minutes, seconds;
-    var interval = setInterval(function () {
-        minutes = parseInt(timer / 60, 10);
-        seconds = parseInt(timer % 60, 10);
-
-        minutes = minutes < 10 ? "0" + minutes : minutes;
-        seconds = seconds < 10 ? "0" + seconds : seconds;
-
-        display.textContent = minutes + ":" + seconds;
-
-        if (--timer < 0) {
-            clearInterval(interval);
-            window.parent.location.reload();
-        }
-    }, 1000);
-}
-
-    // Mevcut bir sayaç var mı kontrol et
-    var timerBox = window.parent.document.getElementById('live-demo-timer');
-    var timeleft = {{TIME_LEFT}}; 
-    if (timeleft <= 0) return;
-
-    if (!timerBox) {
-        // Yoksa oluştur
-        timerBox = window.parent.document.createElement('div');
-        timerBox.id = 'live-demo-timer';
-        timerBox.style.position = 'fixed';
-        timerBox.style.top = '60px'; 
-        timerBox.style.right = '20px';
-        timerBox.style.padding = '10px 20px';
-        timerBox.style.background = 'linear-gradient(135deg, #FF512F 0%, #DD2476 100%)';
-        timerBox.style.color = 'white';
-        timerBox.style.borderRadius = '30px';
-        timerBox.style.fontSize = '20px';
-        timerBox.style.fontWeight = 'bold';
-        timerBox.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
-        timerBox.style.zIndex = '999999';
-        timerBox.style.display = 'flex';
-        timerBox.style.alignItems = 'center';
-        timerBox.style.gap = '10px';
-        timerBox.innerHTML = '<span>⏳</span><span id="demo-time-display">--:--</span>';
-        
-        window.parent.document.body.appendChild(timerBox);
-    }
-    
-    // Her durumda sayacı (yeniden) başlat
-    var display = timerBox.querySelector('#demo-time-display');
-    
-    // Eski sayacı temizle (display elementi üzerinde ID saklayarak)
-    if (display.dataset.intervalId) {
-        clearInterval(display.dataset.intervalId);
-    }
-    
-    startTimer(timeleft, display);
-};
-</script>
-"""
-
-# === GELİŞMİŞ DEMO TAKİP SİSTEMİ (DOSYA TABANLI KALICI) ===
-import uuid
-import os
-
-DEMO_TRACKER_FILE = "demo_tracker.json"
-
-def load_demo_tracker():
-    """Demo takip verilerini dosyadan yükle"""
-    if os.path.exists(DEMO_TRACKER_FILE):
-        try:
-            with open(DEMO_TRACKER_FILE, "r") as f:
-                return json.load(f)
-        except:
-            return {}
-    return {}
-
-def save_demo_tracker(tracker):
-    """Demo takip verilerini dosyaya kaydet"""
-    try:
-        with open(DEMO_TRACKER_FILE, "w") as f:
-            json.dump(tracker, f)
-    except:
-        pass
-
-demo_tracker = load_demo_tracker()
-demo_duration = 120  # 120 saniye (2 dakika)
-
-# --- KULLANICI KİMLİĞİ (URL TABANLI KALICI) ---
-# 1. URL'de 'did' var mı kontrol et
-query_params = st.query_params
-url_did = query_params.get("did", None)
-
-if "demo_id" not in st.session_state:
-    if url_did:
-        st.session_state.demo_id = url_did
-    else:
-        st.session_state.demo_id = "USER-" + str(uuid.uuid4())[:8].upper()
-
-# URL'yi güncelle (Eğer URL'de yoksa veya farklıysa)
-identifier = st.session_state.demo_id
-if url_did != identifier:
-     st.query_params["did"] = identifier
-
-current_time = time.time()
-is_demo_expired = False
-remaining_time = 0
-elapsed_time = 0
-
-# --- SÜRE KONTROLÜ ---
-if not st.session_state.authenticated and identifier:
-    if identifier in demo_tracker:
-        start_time = demo_tracker[identifier]
-        elapsed_time = current_time - start_time
-        if elapsed_time > demo_duration:
-            is_demo_expired = True
-            remaining_time = 0
-        else:
-            remaining_time = int(demo_duration - elapsed_time)
-    else:
-        demo_tracker[identifier] = current_time
-        save_demo_tracker(demo_tracker)  # Yeni kullanıcıyı dosyaya kaydet
-        remaining_time = demo_duration
-
-# CANLI SAYAÇ ENJEKSİYONU (Her re-run'da çalışır ama JS kontrolü var)
-if not st.session_state.authenticated and not is_demo_expired:
-    st.components.v1.html(LIVE_TIMER_JS.replace("{{TIME_LEFT}}", str(remaining_time)), height=0)
-
-# === EKRAN ÇİZİMİ ===
+# === EKRAN ÇİZİMİ (LOGIN GÖSTERİMİ) ===
 if not st.session_state.authenticated:
-    if is_demo_expired or st.session_state.get('show_login', False):
+    if st.session_state.get('show_login', False):
         st.markdown('<div class="login-box">', unsafe_allow_html=True)
         st.markdown(logo_html, unsafe_allow_html=True)
         st.markdown("<h1>UFOmath</h1>", unsafe_allow_html=True)
         st.markdown("<h3>Yurt Dışı Öğretmenlik Sınav Hazırlık</h3>", unsafe_allow_html=True)
         
-        st.error("⏳ Ücretsiz deneme süreniz (1 dakika) doldu.")
-        st.markdown("<p>Devam etmek için lütfen giriş yapın.</p><br>", unsafe_allow_html=True)
+        st.info("🔐 Devam etmek için lütfen giriş yapın.")
+        st.markdown("<br>", unsafe_allow_html=True)
         
         col1, col2, col3 = st.columns([1,2,1])
         with col2:
@@ -783,10 +615,16 @@ if not st.session_state.authenticated:
                 if validate_license(user_code_input, license_input):
                     st.session_state.authenticated = True
                     st.session_state.user_code = user_code_input.strip().upper()
+                    st.session_state.show_login = False
+                    st.session_state.mode = "menu"
                     st.rerun()
                 else:
                     st.error("❌ Hatalı şifre!")
-        
+            
+            if st.button("⬅️ Geri Dön"):
+                st.session_state.show_login = False
+                st.rerun()
+
         st.markdown("""
         <div class="contact-info">
             <p>📧 ufomath@gmail.com | 📱 0505 446 51 98</p>
@@ -803,16 +641,7 @@ if not st.session_state.authenticated:
         st.markdown('</div>', unsafe_allow_html=True)
         st.stop()
     else:
-        # Sidebar'da kalıcı geri sayım göster
-        mins, secs = divmod(remaining_time, 60)
-        st.sidebar.markdown(f"""
-        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 15px; border-radius: 15px; text-align: center; margin-bottom: 20px;">
-            <p style="color: white; margin: 0; font-size: 12px;">⏳ DENEME MODU</p>
-            <p style="color: white; margin: 5px 0; font-size: 28px; font-weight: bold;">{mins:02d}:{secs:02d}</p>
-            <p style="color: rgba(255,255,255,0.8); margin: 0; font-size: 10px;">Kalan Süre</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
+        # Sidebarda giriş butonu
         if st.sidebar.button("🔐 Admin / Lisans Girişi", use_container_width=True):
             st.session_state.show_login = True
             st.rerun()
@@ -825,28 +654,29 @@ ai_questions = load_ai_questions()
 hap_questions = load_hap_bilgiler()
 categories = sorted(list(set(q.get("cat", "Genel") for q in all_questions)))
 
-def start_mode(mode, questions, timer_minutes=None):
+def start_mode(mode, questions):
     st.session_state.mode = mode
     st.session_state.questions = questions.copy()
     random.shuffle(st.session_state.questions)
     st.session_state.index = 0
     st.session_state.score = 0
     st.session_state.show_answer = False
-    if timer_minutes:
-        st.session_state.timer_end = time.time() + (timer_minutes * 60)
-    else:
-        st.session_state.timer_end = None
 
 def go_home():
     st.session_state.mode = "menu"
-    st.session_state.timer_end = None
 
 def next_question(correct):
     if correct:
         st.session_state.score += 1
     st.session_state.index += 1
     st.session_state.show_answer = False
-    if st.session_state.index >= len(st.session_state.questions) :
+    
+    # 20 soru limiti kontrolü (Demo kullanıcıları için)
+    if not st.session_state.authenticated and st.session_state.index >= 20:
+        st.session_state.mode = "demo_limit"
+        return
+
+    if st.session_state.index >= len(st.session_state.questions):
         st.session_state.mode = "result"
 
 if st.session_state.mode == "menu":
@@ -856,9 +686,7 @@ if st.session_state.mode == "menu":
 
     # --- DEMO VE GİRİŞ UYARILARI (ANA EKRAN) ---
     if not st.session_state.authenticated:
-        # Kalan süreyi hesapla
-        mins, secs = divmod(remaining_time, 60)
-        st.warning(f"⚠️ DENEME MODU: Kalan Süre {mins}:{secs:02d}")
+        st.warning("⚠️ DENEME MODU: Sadece Deneme Sınavında ilk 20 soruya erişiminiz var. 🔐 Lisans alınız!")
         
         if st.button("🔐 ŞİFRE / LİSANS GİRİŞİ YAP", type="primary", use_container_width=True):
              st.session_state.show_login = True
@@ -867,24 +695,40 @@ if st.session_state.mode == "menu":
     st.divider()
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("📚 GENEL SINAV\n(1360 Soru)", use_container_width=True, type="primary"):
-            start_mode("exam", all_questions)
-            st.rerun()
-        if st.button("🤖 AI DESTEKLİ\n(1000 Soruluk Benzer Sorular)", use_container_width=True):
-            if ai_questions:
-                # Demo kullanıcısıysa ek süre verme (None), giriş yapmışsa 45 dk
-                t_limit = 45 if st.session_state.authenticated else None
-                start_mode("exam", ai_questions, timer_minutes=t_limit)
+        if st.button("📚 GENEL SINAV\n[Pro 🔒]", use_container_width=True, type="primary"):
+            if not st.session_state.authenticated:
+                st.error("🔒 Bu modülü kullanmak için lisans gerekli! Lütfen giriş yapınız.")
+            else:
+                start_mode("exam", all_questions)
+                st.rerun()
+        if st.button("🤖 AI DESTEKLİ (1000 Soruluk Benzer Sorular)\n[Pro 🔒]", use_container_width=True):
+            if not st.session_state.authenticated:
+                st.error("🔒 Bu modülü kullanmak için lisans gerekli! Lütfen giriş yapınız.")
+            elif ai_questions:
+                start_mode("exam", ai_questions)
                 st.rerun()
             else:
                 st.error("AI soru dosyası bulunamadı!")
     with col2:
-        if st.button("⏱️ DENEME SINAVI\n(100 Soru, 120 dk)", use_container_width=True):
-            sample = random.sample(all_questions, min(100, len(all_questions)))
-            start_mode("exam", sample, timer_minutes=120)
-            st.rerun()
-        if st.button("💡 HAP BİLGİ\n(Çıkmış Sorular)", use_container_width=True):
-            if hap_questions:
+        if st.button("⏱️ DENEME SINAVI\n(Demo: ilk 20 soru)", use_container_width=True):
+            if not st.session_state.authenticated:
+                # Demo: Sadece ilk 20 soruyu gösterir (Asıl kontrol döngüde)
+                # Tüm soruları yüklesek de 20. soruda durduracağız.
+                # Karışıklık olmasın diye 20 tane sample da alabiliriz ama 
+                # kullanıcıya "devamı var" hissi vermek için hepsini yükleyip yarıda kesmek daha etkili olabilir.
+                # Ancak performans için 20 tane alalım.
+                sample = random.sample(all_questions, min(len(all_questions), 200)) # Biraz fazla al, 20'de kes
+                start_mode("exam", sample)
+                st.rerun()
+            else:
+                # Lisanslı: 100 soru
+                sample = random.sample(all_questions, min(100, len(all_questions)))
+                start_mode("exam", sample)
+                st.rerun()
+        if st.button("💡 HAP BİLGİ\n[Pro 🔒]", use_container_width=True):
+            if not st.session_state.authenticated:
+                st.error("🔒 Bu modülü kullanmak için lisans gerekli! Lütfen giriş yapınız.")
+            elif hap_questions:
                 start_mode("exam", hap_questions)
                 st.rerun()
             else:
@@ -893,14 +737,31 @@ if st.session_state.mode == "menu":
     st.markdown("### 📂 Kategoriye Göre Çalış")
     selected_cat = st.selectbox("Kategori Seçin", ["Tümü"] + categories)
     if st.button("Seçili Kategori ile Başla"):
-        if selected_cat == "Tümü":
+        if not st.session_state.authenticated:
+            st.error("🔒 Bu modülü kullanmak için lisans gerekli! Lütfen giriş yapınız.")
+        elif selected_cat == "Tümü":
             start_mode("exam", all_questions)
+            st.rerun()
         else:
             filtered = [q for q in all_questions if q.get("cat") == selected_cat]
             start_mode("exam", filtered)
-        st.rerun()
+            st.rerun()
+            
+    # COPYRIGHT FOOTER
+    st.markdown("---")
+    st.markdown("""
+    <div style="text-align: center; color: #eee; font-size: 12px; margin-top: 20px;">
+        Bu yazılım MEB yurt dışı öğretmenlik sınavlarına hazırlananlara yardımcı ek kaynak olarak hazırlanmıştır.<br>
+        Her hakkı saklıdır. © 2026 UFOmath
+    </div>
+    """, unsafe_allow_html=True)
+            
     st.sidebar.markdown(logo_html, unsafe_allow_html=True)
-    st.sidebar.success(f"✅ Hoş geldiniz: {st.session_state.user_code}")
+    if st.session_state.authenticated:
+        st.sidebar.success(f"✅ Hoş geldiniz: {st.session_state.user_code}")
+    else:
+        st.sidebar.info("👤 Misafir Kullanıcı")
+        
     st.sidebar.info(f"📊 Toplam Soru: {len(all_questions)}")
     st.sidebar.markdown("---")
     st.sidebar.markdown("### 📢 Paylaş")
@@ -912,27 +773,32 @@ if st.session_state.mode == "menu":
         </button>
     </a>
     """, unsafe_allow_html=True)
-    if st.sidebar.button("🚪 ÇIKIŞ YAP", use_container_width=True):
-        st.session_state.authenticated = False
-        st.session_state.user_code = None
-        st.rerun()
+    if st.session_state.authenticated:
+        if st.sidebar.button("🚪 ÇIKIŞ YAP", use_container_width=True):
+            st.session_state.authenticated = False
+            st.session_state.user_code = None
+            st.rerun()
+
 elif st.session_state.mode == "exam":
     questions = st.session_state.questions
     idx = st.session_state.index
+    
+    # GÜVENLİK/LİMİT KONTROLÜ
+    # Demo ve index >= 20 ise -> Demo Limit Ekranına at
+    if not st.session_state.authenticated and idx >= 20:
+        st.session_state.mode = "demo_limit"
+        st.rerun()
+    
     if idx >= len(questions):
         st.session_state.mode = "result"
         st.rerun()
-    if st.session_state.timer_end:
-        remaining = int(st.session_state.timer_end - time.time())
-        if remaining <= 0:
-            st.session_state.mode = "result"
-            st.rerun()
-        mins, secs = divmod(remaining, 60)
-        st.sidebar.error(f"⏱️ Kalan Süre: {mins:02d}:{secs:02d}")
+
     col1, col2 = st.columns([3, 1])
     with col1:
         st.progress((idx + 1) / len(questions))
         st.caption(f"Soru {idx + 1} / {len(questions)}")
+        if not st.session_state.authenticated:
+            st.info(f"📌 Demo Modu: {20 - idx} soru hakkınız kaldı.")
     with col2:
         if st.button("🏠 Ana Menü"):
             go_home()
@@ -958,6 +824,50 @@ elif st.session_state.mode == "exam":
                 st.rerun()
     st.sidebar.metric("Doğru", st.session_state.score)
     st.sidebar.metric("Kalan", len(questions) - idx)
+
+elif st.session_state.mode == "demo_limit":
+    st.markdown("""<style>#MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}</style>""", unsafe_allow_html=True)
+    st.markdown(f"<div style='text-align: center;'>{logo_html}</div>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align: center;'>🔐 LİSANS GEREKLİ</h2>", unsafe_allow_html=True)
+    
+    st.error("⛔ Ücretsiz Deneme Hakkınız (20 Soru) Doldu!")
+    st.markdown("""
+    ---
+    ### 📌 Tebrikler! 
+    İlk 20 soruyu tamamladınız. Devam etmek için **Pro Lisans** sahibi olmanız gerekmektedir.
+    
+    ### 🎁 Lisans Avantajları:
+    ✅ **Sınırsız Soru Çözümü** (Tüm 1000+ Soru)  
+    ✅ **Genel Sınav** Modülü  
+    ✅ **AI Destekli** Çalışma Modülü  
+    ✅ **Hap Bilgiler** ve Çıkmış Sorular  
+    ✅ **Kategoriye Göre** Özelleştirilmiş Çalışma  
+    ---
+    """)
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("🔐 ŞİFRE / LİSANS GİRİŞİ", type="primary", use_container_width=True):
+            st.session_state.show_login = True
+            st.rerun()
+    with col2:
+        if st.button("🏠 ANA MENÜYE DÖN", use_container_width=True):
+            go_home()
+            st.rerun()
+    
+    st.markdown("""
+    <div class="contact-info">
+        <p>📧 ufomath@gmail.com | 📱 0505 446 51 98</p>
+        <hr>
+        <a href="https://wa.me/?text=Merhaba%2C%20Lisans%20hakkinda%20bilgi%20almak%20istiyorum." target="_blank">
+            <button style="background-color: #25D366; color: white; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 20px;">
+                <img src="https://cdn-icons-png.flaticon.com/512/1384/1384007.png" width="16" style="filter: brightness(0) invert(1);">
+                WhatsApp ile İletişime Geç
+            </button>
+        </a>
+    </div>
+    """, unsafe_allow_html=True)
+
 elif st.session_state.mode == "result":
     st.balloons()
     st.markdown("## 🏆 SINAV TAMAMLANDI!")
