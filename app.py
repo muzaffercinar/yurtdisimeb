@@ -748,6 +748,17 @@ if st.session_state.mode == "menu":
     st.markdown("""<style>#MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}</style>""", unsafe_allow_html=True)
     st.markdown(f"<div style='text-align: center;'>{logo_html}</div>", unsafe_allow_html=True)
     st.markdown("<h2 style='text-align: center;'>🎯 ÇALIŞMA MODUNU SEÇİN</h2>", unsafe_allow_html=True)
+
+    # --- DEMO VE GİRİŞ UYARILARI (ANA EKRAN) ---
+    if not st.session_state.authenticated:
+        # Kalan süreyi hesapla
+        mins, secs = divmod(remaining_time, 60)
+        st.warning(f"⚠️ DENEME MODU: Kalan Süre {mins}:{secs:02d}")
+        
+        if st.button("🔐 ŞİFRE / LİSANS GİRİŞİ YAP", type="primary", use_container_width=True):
+             st.session_state.show_login = True
+             st.rerun()
+
     st.divider()
     col1, col2 = st.columns(2)
     with col1:
