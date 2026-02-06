@@ -529,7 +529,7 @@ demo_duration = 60  # 60 saniye
 current_time = time.time()
 user_did = st.query_params.get("did", None)
 is_demo_expired = False
-remaining_time = 0
+remaining_time = 60 # Varsayılan değer
 
 if not st.session_state.authenticated:
     if user_did and user_did in demo_tracker:
@@ -538,6 +538,7 @@ if not st.session_state.authenticated:
         elapsed = current_time - start_time
         if elapsed > demo_duration:
             is_demo_expired = True
+            remaining_time = 0
         else:
             remaining_time = int(demo_duration - elapsed)
     else:
@@ -545,6 +546,7 @@ if not st.session_state.authenticated:
         new_did = str(uuid.uuid4())[:8]  # Kısa UUID
         demo_tracker[new_did] = current_time
         st.query_params["did"] = new_did
+        remaining_time = demo_duration # Yeni başladığı için full süre
         # Sayfayı yenile ki URL güncellensin (kullanıcı ID'yi görsün)
         st.rerun()
 
