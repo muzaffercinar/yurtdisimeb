@@ -1,4 +1,4 @@
-﻿import streamlit as st
+import streamlit as st
 import random
 import json
 import time
@@ -505,7 +505,7 @@ LOGO_SVG = """
   </defs>
   <circle cx="100" cy="100" r="90" fill="url(#grad1)" stroke="white" stroke-width="5"/>
   <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="'Arial', sans-serif" font-weight="bold" font-size="60" fill="white">UFO</text>
-  <text x="50%" y="85%" dominant-baseline="middle" text-anchor="middle" font-family="'Arial', sans-serif" font-size="24" fill="white">math</text>
+  <text x="50%" y="85%" dominant-baseline="middle" text-anchor="middle" font-family="'Arial', sans-serif" font-size="16" fill="white">Sınav Hazırlık</text>
 </svg>
 """
 
@@ -632,42 +632,49 @@ current_time = time.time()
 is_demo_expired = False
 remaining_time = 0
 elapsed_time = 0 
+waiting_for_fingerprint = False
 
 # --- 1. JAVASCRIPT: Cihaz Parmak İzi (FingerprintJS) ---
 if not url_did:
+    # Fingerprint bekleniyor, demo başlatma
+    waiting_for_fingerprint = True
     js_code = """
     <script>
-        const fpPromise = import('https://openfpcdn.io/fingerprintjs/v3')
-            .then(FingerprintJS => FingerprintJS.load());
-
-        fpPromise
-            .then(fp => fp.get())
-            .then(result => {
-                const visitorId = result.visitorId;
-                window.parent.location.href = window.parent.location.href.split('?')[0] + '?did=' + visitorId;
-            })
-            .catch(error => {
-                let localDid = localStorage.getItem('bekard_demo_id');
-                if (!localDid) {
-                    localDid = 'DEMO-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-                    localStorage.setItem('bekard_demo_id', localDid);
-                }
+        // Önce localStorage'dan kontrol et
+        let localDid = localStorage.getItem('ufomath_demo_id');
+        if (localDid) {
+            // Var olan ID'yi kullan
+            if (!window.location.search.includes('did=')) {
                 window.parent.location.href = window.parent.location.href.split('?')[0] + '?did=' + localDid;
-            });
+            }
+        } else {
+            // Yeni ID oluştur ve kaydet
+            const fpPromise = import('https://openfpcdn.io/fingerprintjs/v3')
+                .then(FingerprintJS => FingerprintJS.load());
+
+            fpPromise
+                .then(fp => fp.get())
+                .then(result => {
+                    const visitorId = result.visitorId;
+                    localStorage.setItem('ufomath_demo_id', visitorId);
+                    window.parent.location.href = window.parent.location.href.split('?')[0] + '?did=' + visitorId;
+                })
+                .catch(error => {
+                    let newDid = 'DEMO-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+                    localStorage.setItem('ufomath_demo_id', newDid);
+                    window.parent.location.href = window.parent.location.href.split('?')[0] + '?did=' + newDid;
+                });
+        }
     </script>
     """
     st.components.v1.html(js_code, height=0)
-
-# --- 2. PYTHON KİMLİK BELİRLEME ---
-if url_did:
-    identifier = url_did
+    identifier = None  # Henüz kimlik yok
 else:
-    if "temp_did" not in st.session_state:
-        st.session_state.temp_did = "TEMP-" + str(uuid.uuid4())[:8]
-    identifier = st.session_state.temp_did
+    identifier = url_did
+    waiting_for_fingerprint = False
 
-# --- 3. SÜRE KONTROLÜ ---
-if not st.session_state.authenticated:
+# --- 3. SÜRE KONTROLÜ (Sadece geçerli identifier varsa) ---
+if not st.session_state.authenticated and identifier and not waiting_for_fingerprint:
     if identifier in demo_tracker:
         start_time = demo_tracker[identifier]
         elapsed_time = current_time - start_time
