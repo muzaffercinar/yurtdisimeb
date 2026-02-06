@@ -8,7 +8,7 @@ import base64
 import re
 
 # Sayfa Yapısı
-st.set_page_config(page_title="MC MEB PRO", page_icon="🚀", layout="centered")
+st.set_page_config(page_title="UFOmath", page_icon="🚀", layout="centered")
 
 # --- VERİLERİ ÖNBELLEĞE ALMA VE YÜKLEME ---
 @st.cache_data
@@ -504,8 +504,8 @@ LOGO_SVG = """
     </linearGradient>
   </defs>
   <circle cx="100" cy="100" r="90" fill="url(#grad1)" stroke="white" stroke-width="5"/>
-  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="'Arial', sans-serif" font-weight="bold" font-size="80" fill="white" letter-spacing="-5">MC</text>
-  <text x="50%" y="85%" dominant-baseline="middle" text-anchor="middle" font-family="'Arial', sans-serif" font-size="20" fill="white" letter-spacing="5">AKADEMİ</text>
+  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="'Arial', sans-serif" font-weight="bold" font-size="60" fill="white">UFO</text>
+  <text x="50%" y="85%" dominant-baseline="middle" text-anchor="middle" font-family="'Arial', sans-serif" font-size="24" fill="white">math</text>
 </svg>
 """
 
@@ -686,7 +686,7 @@ if not st.session_state.authenticated:
     if is_demo_expired:
         st.markdown('<div class="login-box">', unsafe_allow_html=True)
         st.markdown(logo_html, unsafe_allow_html=True)
-        st.markdown("<h1>MC AKADEMİ</h1>", unsafe_allow_html=True)
+        st.markdown("<h1>UFOmath</h1>", unsafe_allow_html=True)
         st.markdown("<h3>Yurt Dışı Öğretmenlik Sınav Hazırlık</h3>", unsafe_allow_html=True)
         
         st.error("⏳ Ücretsiz deneme süreniz (1 dakika) doldu.")
