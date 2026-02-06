@@ -36,10 +36,13 @@ def validate_license(device_id, input_key):
     try:
         # Doğru anahtarı hesapla
         signature = hmac.new(SECRET_KEY, device_id.encode('utf-8'), hashlib.sha256).digest()
-        correct_key_raw = base64.urlsafe_b64encode(signature).decode('utf-8').upper()[:12]
-        correct_key = f"{correct_key_raw[:4]}-{correct_key_raw[4:8]}-{correct_key_raw[8:]}"
+        license_key = base64.urlsafe_b64encode(signature).decode('utf-8').upper()
         
-        return input_key.strip() == correct_key
+        import re
+        clean_key = re.sub(r'[^A-Z0-9]', '', license_key)
+        correct_key = clean_key[:6]
+        
+        return input_key.strip().upper() == correct_key
     except:
         return False
 
@@ -52,7 +55,7 @@ device_id = get_device_id()
 if not st.session_state.authenticated:
     st.markdown("""
     <style>
-    .stTextInput > div > div > input {text-align: center; letter-spacing: 3px; font-family: monospace;}
+    .stTextInput > div > div > input {text-align: center; letter-spacing: 5px; font-family: monospace;}
     .big-text {font-size: 24px; font-weight: bold; color: #1E88E5; text-align: center;}
     </style>
     """, unsafe_allow_html=True)
@@ -73,7 +76,7 @@ if not st.session_state.authenticated:
     st.caption(f"(Konu kısmına 'Lisans Talebi - {device_id}' yazınız)")
     
     st.markdown("### Adım 3: Gelen Şifreyi Girin")
-    license_input = st.text_input("Aktivasyon Şifresi", placeholder="XXXX-XXXX-XXXX")
+    license_input = st.text_input("Aktivasyon Şifresi", placeholder="XXXXXX")
     
     if st.button("🔓 GİRİŞ YAP"):
         if validate_license(device_id, license_input):
