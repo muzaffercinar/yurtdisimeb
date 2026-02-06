@@ -343,7 +343,7 @@ HAP_BILGILER_DATA = [
     "Osmanlı'da 'Ekber ve Erşed' sistemine geçen padişah: I. Ahmet.",
     "Çocuk Hizmetleri Genel Müdürlüğü'nün temelini oluşturan kurum: Himaye-i Etfal Cemiyeti.",
     "Mustafa Kemal'in 'Müdafaa-i Hukuk Grubu' yerine kurulan grup: Felah-ı Vatan Grubu.",
-    "Sakarya Savaşı'nın diplomatik sonuçları: Ankara Antlaşması ve Kars Antlaşması.",
+    "Sakarya Savaşı'nin diplomatik sonuçları: Ankara Antlaşması ve Kars Antlaşması.",
     "Medine Müdafaası kahramanı 'Çöl Kaplanı': Ömer Fahrettin (Türkkan) Paşa.",
     "Preveze Deniz Zaferi'nin kazanıldığı yer (Preveze): Günümüzde Yunanistan sınırlarındadır.",
     "Kutadgu Bilig'in yazarı: Yusuf Has Hacip.",
@@ -383,7 +383,7 @@ HAP_BILGILER_DATA = [
     "Sosyal ve Ekonomik Haklar: Eğitim hakkı, Sendika kurma, Ailenin korunması. (Mülkiyet hakkı 'Kişi Hakları' grubundadır) .",
     "Siyasi Haklar: Seçme ve seçilme, Dilekçe hakkı, Vatan hizmeti.",
     "Milletlerarası antlaşmaları onaylama yetkisi: Cumhurbaşkanı.",
-    "Yurt dışında görevlendirilecek personel sınavı: Mesleki Yeterlilik Sınavı ve Temsil Yeteneği Sınavı (Mülakat).",
+    "Yurt dışı görevlendirilecek personel sınavı: Mesleki Yeterlilik Sınavı ve Temsil Yeteneği Sınavı (Mülakat).",
     "Pasaport Türleri: Diplomatik (Siyah), Hususi (Yeşil), Hizmet (Gri), Umuma Mahsus (Bordo). Mavi pasaport artık kullanılmamaktadır.",
     "Mecburi ilköğretim çağı: 6-14 yaş (Ancak 222 sayılı kanuna göre öğretim yılı sonuna kadar bitiremeyenlere en çok 2 yıl daha izin verilir).",
     "Eğitime ara verme (Olağanüstü hal): En az 2 hafta yapılamazsa tatilde telafi edilebilir (izinler kısaltılabilir).",
@@ -410,7 +410,7 @@ HAP_BILGILER_DATA = [
     "Machu Picchu antik kenti: Peru.",
     "Hollywood (Sinema): ABD.",
     "2020 Tokyo Olimpiyatları'nda Türkiye'nin en çok madalya aldığı branş: Karate.",
-    "Türkiye'nin yurt dışı kültür tanıtım kurumu (2007): Yunus Emre Enstitüsü.",
+    "Türkiye'nin yurt dışı culture tanıtım kurumu (2007): Yunus Emre Enstitüsü.",
     "Mona Lisa tablosunun bulunduğu şehir: Paris (Louvre Müzesi).",
     "Almanya Hükümet Başkanı unvanı: Şansölye.",
     "e-Devlet Kapısı yöneticisi: Cumhurbaşkanlığı Dijital Dönüşüm Ofisi.",
@@ -584,7 +584,8 @@ h1, h2, h3 {
 .stButton button:hover {
     transform: translateY(-3px) !important;
     box-shadow: 0 15px 25px rgba(0,0,0,0.3) !important;
-    
+}
+
 /* İletişim Kutusu */
 .contact-info {
     background: rgba(0, 0, 0, 0.3);
@@ -596,35 +597,15 @@ h1, h2, h3 {
 </style>
 """, unsafe_allow_html=True)
 
-# === GELİŞMİŞ DEMO TAKİP SİSTEMİ (PERSISTENT) ===
+# === GELİŞMİŞ DEMO TAKİP SİSTEMİ ===
 import uuid
-
-DEMO_REGISTRY_FILE = "demo_registry.json"
-
-def load_demo_registry():
-    if os.path.exists(DEMO_REGISTRY_FILE):
-        try:
-            with open(DEMO_REGISTRY_FILE, "r") as f:
-                return json.load(f)
-        except:
-            return {}
-    return {}
-
-def save_demo_registry(data):
-    try:
-        with open(DEMO_REGISTRY_FILE, "w") as f:
-            json.dump(data, f)
-    except:
-        pass
 
 @st.cache_resource
 def get_demo_tracker():
-    # Başlangıçta dosyadan yükle
-    return load_demo_registry()
+    return {}
 
 demo_tracker = get_demo_tracker()
 demo_duration = 60  # 60 saniye
-
 
 # 1. URL'de 'did' var mı kontrol et
 query_params = st.query_params
@@ -635,15 +616,10 @@ is_demo_expired = False
 remaining_time = 0
 elapsed_time = 0 
 
-# --- 1. JAVASCRIPT: LocalStorage Kontrolü (ARKA PLANDA) ---
-# Sadece URL'de ID yoksa çalışır. Başarılı olursa sayfayı yeniler.
-# Başarısız olursa (iframe engeli vb.) uygulama Session ID ile devam eder.
 # --- 1. JAVASCRIPT: Cihaz Parmak İzi (FingerprintJS) ---
-# En güvenilir Cihaz ID yöntemidir.
 if not url_did:
     js_code = """
     <script>
-        // FingerprintJS CDN'den yükle ve çalıştır
         const fpPromise = import('https://openfpcdn.io/fingerprintjs/v3')
             .then(FingerprintJS => FingerprintJS.load());
 
@@ -651,12 +627,9 @@ if not url_did:
             .then(fp => fp.get())
             .then(result => {
                 const visitorId = result.visitorId;
-                // URL'ye ekle ve sayfayı yenile
                 window.parent.location.href = window.parent.location.href.split('?')[0] + '?did=' + visitorId;
             })
             .catch(error => {
-                console.error("Fingerprint Hatası:", error);
-                // Hata durumunda LocalStorage Fallback
                 let localDid = localStorage.getItem('bekard_demo_id');
                 if (!localDid) {
                     localDid = 'DEMO-' + Math.random().toString(36).substr(2, 9).toUpperCase();
@@ -668,18 +641,15 @@ if not url_did:
     """
     st.components.v1.html(js_code, height=0)
 
-# --- 2. PYTHON KİMLİK BELİRLEME (SADECE CİHAZ ID) ---
+# --- 2. PYTHON KİMLİK BELİRLEME ---
 if url_did:
-    # 1. Öncelik: Fingerprint ID (Cihaz Kimliği)
     identifier = url_did
 else:
-    # 2. Öncelik: Geçici Session (JS yüklenene kadar)
     if "temp_did" not in st.session_state:
         st.session_state.temp_did = "TEMP-" + str(uuid.uuid4())[:8]
     identifier = st.session_state.temp_did
 
 # --- 3. SÜRE KONTROLÜ ---
-# Sürekli işleyen mantık (JS beklemez)
 if not st.session_state.authenticated:
     if identifier in demo_tracker:
         start_time = demo_tracker[identifier]
@@ -690,15 +660,11 @@ if not st.session_state.authenticated:
         else:
             remaining_time = int(demo_duration - elapsed_time)
     else:
-        # Yeni kullanıcı
         demo_tracker[identifier] = current_time
-        save_demo_registry(demo_tracker) # Dosyaya kaydet
         remaining_time = demo_duration
 
-# === EKRAN ÇİZİMİ (Süre dolduysa veya Giriş Ekranı) ===
-# === EKRAN ÇİZİMİ (Süre dolduysa veya Demo devam ediyorsa) ===
+# === EKRAN ÇİZİMİ ===
 if not st.session_state.authenticated:
-    # A) SÜRE BİTMİŞSE -> ENGELLE
     if is_demo_expired:
         st.markdown('<div class="login-box">', unsafe_allow_html=True)
         st.markdown(logo_html, unsafe_allow_html=True)
@@ -708,7 +674,6 @@ if not st.session_state.authenticated:
         st.error("⏳ Ücretsiz deneme süreniz (1 dakika) doldu.")
         st.markdown("<p>Devam etmek için lütfen giriş yapın.</p><br>", unsafe_allow_html=True)
         
-        # Giriş Formu
         col1, col2, col3 = st.columns([1,2,1])
         with col2:
             user_code_input = st.text_input("Kullanıcı Kodu", placeholder="ÖRNEK: MEB001", label_visibility="collapsed")
@@ -722,38 +687,31 @@ if not st.session_state.authenticated:
                 else:
                     st.error("❌ Hatalı şifre!")
         
-        # İletişim & Paylaşım
         st.markdown("""
         <div class="contact-info">
             <p>📧 ufomath@gmail.com | 📱 0505 446 51 98</p>
             <hr>
             <a href="https://wa.me/?text=Merhaba%2C%20https%3A%2F%2Fyurtdisimebhazirlik.streamlit.app" target="_blank">
-                <button style="background-color: #25D366; color: white; border: none; padding: 10px; width: 100%; border-radius: 5px;">WhatsApp ile Paylaş</button>
+                <button style="background-color: #25D366; color: white; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 20px;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1384/1384007.png" width="16" style="filter: brightness(0) invert(1);">
+                    WhatsApp ile Paylaş
+                </button>
             </a>
         </div>
         """, unsafe_allow_html=True)
         
         st.markdown('</div>', unsafe_allow_html=True)
         st.stop()
-    
-    # B) SÜRE VARSA -> SAYACI GÖSTER
     else:
-        remaining_time = int(demo_duration - elapsed_time)
         st.info(f"⏳ **DENEME MODU:** Uygulamayı ücretsiz inceliyorsunuz. Kalan Süre: **{remaining_time} saniye**")
-        
-        # Hata almamak için geçici kullanıcı kodu tanımla
         if "user_code" not in st.session_state:
             st.session_state.user_code = "MİSAFİR"
-
-# === GİRİŞ BAŞARILI (veya DEMO MODU AKTİF) ===
-
 
 all_questions = load_questions()
 ai_questions = load_ai_questions()
 hap_questions = load_hap_bilgiler()
 categories = sorted(list(set(q.get("cat", "Genel") for q in all_questions)))
 
-# --- YARDIMCI FONKSİYONLAR ---
 def start_mode(mode, questions, timer_minutes=None):
     st.session_state.mode = mode
     st.session_state.questions = questions.copy()
@@ -775,51 +733,36 @@ def next_question(correct):
         st.session_state.score += 1
     st.session_state.index += 1
     st.session_state.show_answer = False
-    if st.session_state.index >= len(st.session_state.questions):
+    if st.session_state.index >= len(st.session_state.questions) :
         st.session_state.mode = "result"
 
-# === ANA MENÜ ===
 if st.session_state.mode == "menu":
-    # Streamlit Markasını Gizle
-    st.markdown("""
-        <style>
-        #MainMenu {visibility: hidden;}
-        footer {visibility: hidden;}
-        header {visibility: hidden;}
-        </style>
-    """, unsafe_allow_html=True)
-    
+    st.markdown("""<style>#MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}</style>""", unsafe_allow_html=True)
     st.markdown(f"<div style='text-align: center;'>{logo_html}</div>", unsafe_allow_html=True)
     st.markdown("<h2 style='text-align: center;'>🎯 ÇALIŞMA MODUNU SEÇİN</h2>", unsafe_allow_html=True)
     st.divider()
-    
     col1, col2 = st.columns(2)
-    
     with col1:
         if st.button("📚 GENEL SINAV\n(1360 Soru)", use_container_width=True, type="primary"):
             start_mode("exam", all_questions)
             st.rerun()
-        
         if st.button("🤖 AI DESTEKLİ\n(Yüksek Olasılık)", use_container_width=True):
             if ai_questions:
                 start_mode("exam", ai_questions, timer_minutes=45)
                 st.rerun()
             else:
                 st.error("AI soru dosyası bulunamadı!")
-    
     with col2:
         if st.button("⏱️ DENEME SINAVI\n(100 Soru, 120 dk)", use_container_width=True):
             sample = random.sample(all_questions, min(100, len(all_questions)))
             start_mode("exam", sample, timer_minutes=120)
             st.rerun()
-        
         if st.button("💡 HAP BİLGİ\n(Çıkmış Sorular)", use_container_width=True):
             if hap_questions:
                 start_mode("exam", hap_questions)
                 st.rerun()
             else:
                 st.error("Hap bilgi dosyası bulunamadı!")
-    
     st.divider()
     st.markdown("### 📂 Kategoriye Göre Çalış")
     selected_cat = st.selectbox("Kategori Seçin", ["Tümü"] + categories)
@@ -830,37 +773,29 @@ if st.session_state.mode == "menu":
             filtered = [q for q in all_questions if q.get("cat") == selected_cat]
             start_mode("exam", filtered)
         st.rerun()
-    
+    st.sidebar.markdown(logo_html, unsafe_allow_html=True)
     st.sidebar.success(f"✅ Hoş geldiniz: {st.session_state.user_code}")
     st.sidebar.info(f"📊 Toplam Soru: {len(all_questions)}")
-    
-    # Sidebar Paylaşım
     st.sidebar.markdown("---")
-    st.sidebar.markdown("### 📣 Arkadaşına Öner")
+    st.sidebar.markdown("### 📢 Paylaş")
     st.sidebar.markdown("""
-    <a href="https://wa.me/?text=Merhaba%2C%20Yurt%20d%C4%B1%C5%9F%C4%B1%20%C3%B6%C4%9Fretmenlik%20s%C4%B1nav%C4%B1%20i%C3%A7in%20bu%20uygulamay%C4%B1%20kesinlikle%20incelemelisin%3A%20https%3A%2F%2Fyurtdisimebhazirlik.streamlit.app" target="_blank" style="text-decoration: none;">
+    <a href="https://wa.me/?text=Merhaba%2C%20Yurt%20Dışı%20Öğretmenlik%20Sınavı%20için%20harika%20bir%20kaynak%20buldum!%20Hemen%20incelemek%20için:%20https%3A%2F%2Fyurtdisimebhazirlik.streamlit.app" target="_blank">
         <button style="background-color: #25D366; color: white; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 20px;">
             <img src="https://cdn-icons-png.flaticon.com/512/1384/1384007.png" width="16" style="filter: brightness(0) invert(1);">
             WhatsApp ile Paylaş
         </button>
     </a>
     """, unsafe_allow_html=True)
-    
     if st.sidebar.button("🚪 ÇIKIŞ YAP", use_container_width=True):
         st.session_state.authenticated = False
         st.session_state.user_code = None
         st.rerun()
-
-# === SINAV MODU ===
 elif st.session_state.mode == "exam":
     questions = st.session_state.questions
     idx = st.session_state.index
-    
     if idx >= len(questions):
         st.session_state.mode = "result"
         st.rerun()
-    
-    # Zamanlayıcı
     if st.session_state.timer_end:
         remaining = int(st.session_state.timer_end - time.time())
         if remaining <= 0:
@@ -868,8 +803,6 @@ elif st.session_state.mode == "exam":
             st.rerun()
         mins, secs = divmod(remaining, 60)
         st.sidebar.error(f"⏱️ Kalan Süre: {mins:02d}:{secs:02d}")
-    
-    # Üst bilgi
     col1, col2 = st.columns([3, 1])
     with col1:
         st.progress((idx + 1) / len(questions))
@@ -878,22 +811,16 @@ elif st.session_state.mode == "exam":
         if st.button("🏠 Ana Menü"):
             go_home()
             st.rerun()
-    
-    # Soru kartı
     q = questions[idx]
     st.markdown(f"### ❓ {q.get('q', 'Soru yok')}")
-    
     if q.get("cat"):
         st.caption(f"📁 {q['cat']}")
-    
-    # Cevap göster butonu
     if not st.session_state.show_answer:
-        if st.button("👁️ CEVABU GÖR", use_container_width=True):
+        if st.button("👁️ CEVABI GÖR", use_container_width=True):
             st.session_state.show_answer = True
             st.rerun()
     else:
         st.success(f"✅ **Cevap:** {q.get('a', '-')}")
-        
         col1, col2 = st.columns(2)
         with col1:
             if st.button("✅ BİLDİM", use_container_width=True, type="primary"):
@@ -903,32 +830,24 @@ elif st.session_state.mode == "exam":
             if st.button("❌ BİLMEDİM", use_container_width=True):
                 next_question(False)
                 st.rerun()
-    
-    # Sidebar bilgi
     st.sidebar.metric("Doğru", st.session_state.score)
     st.sidebar.metric("Kalan", len(questions) - idx)
-
-# === SONUÇ EKRANI ===
 elif st.session_state.mode == "result":
     st.balloons()
     st.markdown("## 🏆 SINAV TAMAMLANDI!")
-    
     total = len(st.session_state.questions)
     score = st.session_state.score
     percent = int((score / total) * 100) if total > 0 else 0
-    
     col1, col2, col3 = st.columns(3)
     col1.metric("✅ Doğru", score)
     col2.metric("❌ Yanlış", total - score)
     col3.metric("📊 Başarı", f"%{percent}")
-    
     if percent >= 80:
         st.success("🎉 Mükemmel! Harika bir performans!")
     elif percent >= 60:
         st.info("👍 İyi! Biraz daha çalışarak daha iyi olabilirsin.")
     else:
         st.warning("📚 Daha fazla çalışman gerekiyor.")
-    
     if st.button("🏠 Ana Menüye Dön", use_container_width=True):
         go_home()
         st.rerun()
