@@ -494,44 +494,130 @@ if not st.session_state.authenticated:
             st.session_state.authenticated = True
             st.session_state.user_code = query_params["user"]
 
-# === LİSANS EKRANI ===
+# === PREMIUM GİRİŞ EKRANI ===
 if not st.session_state.authenticated:
+    # --- CSS STİLLERİ ---
     st.markdown("""
     <style>
-    .stTextInput > div > div > input {text-align: center; letter-spacing: 3px; font-family: monospace;}
+    /* Arka Plan */
+    .stApp {
+        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        background-size: 400% 400%;
+        animation: gradient 15s ease infinite;
+    }
+    
+    @keyframes gradient {
+        0% {background-position: 0% 50%;}
+        50% {background-position: 100% 50%;}
+        100% {background-position: 0% 50%;}
+    }
+    
+    /* Cam Efekti (Glassmorphism) Kart */
+    .login-box {
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        backdrop-filter: blur(8.5px);
+        -webkit-backdrop-filter: blur(8.5px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        padding: 40px;
+        text-align: center;
+        color: white;
+    }
+    
+    /* Input Alanları */
+    .stTextInput input {
+        background-color: rgba(255, 255, 255, 0.8) !important;
+        border-radius: 10px !important;
+        border: none !important;
+        padding: 15px !important;
+        font-size: 18px !important;
+        text-align: center !important;
+        letter-spacing: 2px !important;
+        color: #333 !important;
+    }
+    
+    /* Başlıklar */
+    h1, h2, h3 {
+        color: white !important;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    /* Buton */
+    .stButton button {
+        background: linear-gradient(45deg, #FF512F 0%, #DD2476 100%) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 50px !important;
+        padding: 15px 30px !important;
+        font-size: 20px !important;
+        font-weight: bold !important;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
+        transition: all 0.3s ease !important;
+        width: 100% !important;
+    }
+    .stButton button:hover {
+        transform: translateY(-3px) !important;
+        box-shadow: 0 15px 25px rgba(0,0,0,0.3) !important;
+    }
+
+    /* İletişim Kutusu */
+    .contact-info {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 20px;
+        font-size: 14px;
+    }
     </style>
     """, unsafe_allow_html=True)
     
-    st.image("https://cdn-icons-png.flaticon.com/512/2913/2913133.png", width=100)
-    st.title("🔐 Lisans Aktivasyonu")
-    st.info("Bu eğitim seti lisanslı kullanıcılar içindir.")
+    # --- LOGO VE BAŞLIK ---
+    st.markdown('<div class="login-box">', unsafe_allow_html=True)
+    st.image("https://cdn-icons-png.flaticon.com/512/2913/2913133.png", width=120)
+    st.markdown("<h1>MC MEB PRO</h1>", unsafe_allow_html=True)
+    st.markdown("<h3>Yurt Dışı Öğretmenlik Sınav Hazırlık</h3>", unsafe_allow_html=True)
+    st.markdown("<p>Premium Eğitim Seti • 2026 Özel Sürüm</p>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
     
-    st.markdown("### Adım 1: Kullanıcı Kodunuzu Girin")
-    user_code_input = st.text_input("Kullanıcı Kodu", placeholder="MEB001")
+    # --- GİRİŞ FORMU ---
+    col1, col2, col3 = st.columns([1,2,1])
+    with col2:
+        user_code_input = st.text_input("Kullanıcı Kodu", placeholder="ÖRNEK: MEB001", label_visibility="collapsed")
+        st.markdown("<p style='font-size: 12px; margin-top: -10px; margin-bottom: 20px;'>Kullanıcı Kodunuzu Girin</p>", unsafe_allow_html=True)
+        
+        license_input = st.text_input("Şifre", placeholder="******", type="password", label_visibility="collapsed")
+        st.markdown("<p style='font-size: 12px; margin-top: -10px; margin-bottom: 20px;'>Aktivasyon Şifrenizi Girin</p>", unsafe_allow_html=True)
+        
+        if st.button("GİRİŞ YAP 🚀"):
+            if not user_code_input.strip():
+                st.error("⚠️ Lütfen Kullanıcı Kodunuzu girin!")
+            elif not license_input.strip():
+                st.error("⚠️ Lütfen Aktivasyon Şifrenizi girin!")
+            elif validate_license(user_code_input, license_input):
+                st.session_state.authenticated = True
+                st.session_state.user_code = user_code_input.strip().upper()
+                st.query_params["user"] = user_code_input.strip().upper()
+                st.query_params["key"] = license_input.strip().upper()
+                st.balloons()
+                st.rerun()
+            else:
+                st.error("❌ Hatalı veya geçersiz şifre!")
+
+    # --- İLETİŞİM ---
+    st.markdown("""
+    <div class="contact-info">
+        <p>🔑 <strong>Kullanıcı Kodu ve Şifre Talep:</strong></p>
+        <p>📧 Mail: <strong>ufomath@gmail.com</strong></p>
+        <p>📱 WhatsApp: <strong>0505 446 51 98</strong></p>
+    </div>
+    """, unsafe_allow_html=True)
     
-    st.markdown("### Adım 2: Aktivasyon Şifrenizi Girin")
-    license_input = st.text_input("Aktivasyon Şifresi", placeholder="XXXXXX", type="password")
-    
-    st.divider()
-    st.info("📧 Şifre almak için kullanıcı kodunuzu **ufomath@gmail.com** adresine gönderin.")
-    
-    if st.button("🔓 GİRİŞ YAP", use_container_width=True):
-        if not user_code_input.strip():
-            st.error("❌ Kullanıcı Kodunu girin!")
-        elif not license_input.strip():
-            st.error("❌ Şifreyi girin!")
-        elif validate_license(user_code_input, license_input):
-            st.session_state.authenticated = True
-            st.session_state.user_code = user_code_input.strip().upper()
-            st.query_params["user"] = user_code_input.strip().upper()
-            st.query_params["key"] = license_input.strip().upper()
-            st.balloons()
-            st.rerun()
-        else:
-            st.error("❌ Hatalı şifre!")
+    st.markdown('</div>', unsafe_allow_html=True)
     st.stop()
 
-# === ANA UYGULAMA ===
+# === ANA UYGULAMA (GİRİŞ BAŞARILI) ===
+
 all_questions = load_questions()
 ai_questions = load_ai_questions()
 hap_questions = load_hap_bilgiler()
