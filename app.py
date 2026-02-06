@@ -496,22 +496,43 @@ if not st.session_state.authenticated:
 
 # --- PREMİUM LOGO (SVG) ---
 LOGO_SVG = """
-<svg width="150" height="150" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#1e3c72;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#2a5298;stop-opacity:1" />
+      <stop offset="0%" style="stop-color:#4b6cb7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#182848;stop-opacity:1" />
     </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
   </defs>
-  <circle cx="100" cy="100" r="90" fill="url(#grad1)" stroke="white" stroke-width="5"/>
-  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="'Arial', sans-serif" font-weight="bold" font-size="60" fill="white">UFO</text>
-  <text x="50%" y="85%" dominant-baseline="middle" text-anchor="middle" font-family="'Arial', sans-serif" font-size="16" fill="white">Sınav Hazırlık</text>
+  
+  <!-- Outer Orbit Ring -->
+  <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="10,5"/>
+  
+  <!-- Main Body -->
+  <circle cx="100" cy="100" r="80" fill="url(#grad1)" stroke="white" stroke-width="3" filter="url(#glow)"/>
+  
+  <!-- Decorative Swoosh (Saturn Ring style) -->
+  <ellipse cx="100" cy="100" rx="90" ry="30" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" transform="rotate(-30, 100, 100)"/>
+  
+  <!-- Text -->
+  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="'Trebuchet MS', sans-serif" font-weight="bold" font-size="32" fill="white" style="letter-spacing: 2px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">UFOmath</text>
+  
+  <!-- Small Star Accents -->
+  <circle cx="50" cy="50" r="2" fill="white"/>
+  <circle cx="150" cy="150" r="3" fill="white"/>
+  <circle cx="160" cy="40" r="2" fill="white"/>
 </svg>
 """
 
 # Logo'yu Base64'e çevir
 logo_b64 = base64.b64encode(LOGO_SVG.encode('utf-8')).decode("utf-8")
-logo_html = f'<img src="data:image/svg+xml;base64,{logo_b64}" width="150">'
+logo_html = f'<img src="data:image/svg+xml;base64,{logo_b64}" width="180">'
 
 # CSS STİLLERİ
 st.markdown("""
@@ -564,10 +585,15 @@ h1, h2, h3 {
     color: white !important;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
+h4 {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-weight: normal !important;
+    letter-spacing: 1px;
+}
 
-/* Buton */
+/* Buton - Secondary (Varsayılan/Mavi) */
 .stButton button {
-    background: linear-gradient(45deg, #FF512F 0%, #DD2476 100%) !important;
+    background: linear-gradient(45deg, #1e3c72 0%, #2a5298 100%) !important;
     color: white !important;
     border: none !important;
     border-radius: 50px !important;
@@ -578,6 +604,15 @@ h1, h2, h3 {
     transition: all 0.3s ease !important;
     width: 100% !important;
 }
+
+/* Buton - Primary (Turuncu - Demo İçin) */
+div.stButton > button[kind="primary"] {
+    background: linear-gradient(45deg, #FF512F 0%, #F09819 100%) !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: 0 10px 20px rgba(255, 81, 47, 0.4) !important;
+}
+
 .stButton button:hover {
     transform: translateY(-3px) !important;
     box-shadow: 0 15px 25px rgba(0,0,0,0.3) !important;
@@ -683,7 +718,7 @@ def next_question(correct):
 if st.session_state.mode == "menu":
     st.markdown("""<style>#MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}</style>""", unsafe_allow_html=True)
     st.markdown(f"<div style='text-align: center;'>{logo_html}</div>", unsafe_allow_html=True)
-    st.markdown("<h2 style='text-align: center;'>🎯 ÇALIŞMA MODUNU SEÇİN</h2>", unsafe_allow_html=True)
+    st.markdown("<h4 style='text-align: center; margin-bottom: 40px;'>Yurt Dışı Öğretmenlik Sınav Hazırlık Yazılımı</h4>", unsafe_allow_html=True)
 
     # --- DEMO VE GİRİŞ UYARILARI (ANA EKRAN) ---
     if not st.session_state.authenticated:
@@ -696,7 +731,7 @@ if st.session_state.mode == "menu":
     st.divider()
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("📚 GENEL SINAV\n[Pro 🔒]", use_container_width=True, type="primary"):
+        if st.button("📚 GENEL SINAV\n[Pro 🔒]", use_container_width=True):
             if not st.session_state.authenticated:
                 st.error("🔒 Bu modülü kullanmak için lisans gerekli! Lütfen giriş yapınız.")
             else:
@@ -711,7 +746,7 @@ if st.session_state.mode == "menu":
             else:
                 st.error("AI soru dosyası bulunamadı!")
     with col2:
-        if st.button("⏱️ DENEME SINAVI\n(Demo: ilk 20 soru)", use_container_width=True):
+        if st.button("⏱️ DENEME SINAVI\n(Demo: ilk 20 soru)", use_container_width=True, type="primary"):
             if not st.session_state.authenticated:
                 # Demo: Sadece ilk 20 soruyu gösterir (Asıl kontrol döngüde)
                 # Tüm soruları yüklesek de 20. soruda durduracağız.
