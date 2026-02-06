@@ -521,7 +521,7 @@ LOGO_SVG = """
   <ellipse cx="100" cy="100" rx="90" ry="30" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" transform="rotate(-30, 100, 100)"/>
   
   <!-- Text -->
-  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="'Trebuchet MS', sans-serif" font-weight="bold" font-size="32" fill="white" style="letter-spacing: 2px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">UFOmath</text>
+  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="'Trebuchet MS', sans-serif" font-weight="bold" font-size="32" fill="#FF6F00" style="letter-spacing: 2px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">UFOmath</text>
   
   <!-- Small Star Accents -->
   <circle cx="50" cy="50" r="2" fill="white"/>
@@ -677,40 +677,78 @@ p, span, div {
 }
 
 /* ===== BUTTONS - PRIMARY STYLE ===== */
-.stButton button {
+/* ===== BUTTONS - PRIMARY STYLE (Blue Default) ===== */
+/* ===== BUTTONS - GLOBAL STYLE ===== */
+div.stButton > button {
+    width: 100% !important;
+    border-radius: 12px !important;
+    min-height: 3.5rem !important;
+    height: auto !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
     background: linear-gradient(135deg, #0D47A1 0%, #1976D2 100%) !important;
     color: white !important;
     border: none !important;
-    border-radius: 14px !important;
-    padding: 14px 28px !important;
+    padding: 12px 20px !important;
     font-size: 16px !important;
-    font-weight: 600 !important;
     font-family: 'Inter', sans-serif !important;
-    letter-spacing: 0.3px !important;
-    box-shadow: 0 6px 20px rgba(13, 71, 161, 0.35) !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    width: 100% !important;
+    letter-spacing: 0.5px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: normal !important;
+    line-height: 1.4 !important;
 }
 
-.stButton button:hover {
-    transform: translateY(-3px) !important;
-    box-shadow: 0 12px 28px rgba(13, 71, 161, 0.45) !important;
+div.stButton > button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 15px rgba(13, 71, 161, 0.4) !important;
     background: linear-gradient(135deg, #1565C0 0%, #1E88E5 100%) !important;
+    color: white !important;
 }
 
-.stButton button:active {
-    transform: translateY(-1px) !important;
+div.stButton > button:active {
+    transform: translateY(1px) !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
 }
 
-/* ===== BUTTONS - CTA/PRIMARY KIND ===== */
+/* 1. DENEME SINAVI BUTTON (Legacy/Demo) - Orange Glow */
+/* Target button containing "DENEME" text */
+div.stButton > button p {
+    font-size: 16px !important;
+}
+
+div.stButton > button:has(p:contains("DENEME")) {
+    background: transparent !important;
+    border: 3px solid #FF6F00 !important;
+    color: #FF6F00 !important;
+    box-shadow: 0 0 15px rgba(255, 111, 0, 0.5), inset 0 0 10px rgba(255, 111, 0, 0.2) !important;
+}
+
+div.stButton > button:has(p:contains("DENEME")):hover {
+    background: rgba(255, 111, 0, 0.15) !important;
+    color: #FF8F00 !important;
+    box-shadow: 0 0 25px rgba(255, 111, 0, 0.7), inset 0 0 15px rgba(255, 111, 0, 0.3) !important;
+    border-color: #FF8F00 !important;
+}
+
+div.stButton > button:has(p:contains("DENEME")) p {
+    color: #FF6F00 !important;
+    font-weight: 800 !important;
+    text-shadow: 0 0 10px rgba(255, 111, 0, 0.4) !important;
+}
+
+/* 2. PRIMARY ACTION BUTTONS (Start Exam, Login, Category, etc.) */
 div.stButton > button[kind="primary"] {
     background: linear-gradient(135deg, #00897B 0%, #00ACC1 100%) !important;
-    box-shadow: 0 6px 20px rgba(0, 137, 123, 0.4) !important;
+    color: white !important;
+    border: none !important;
 }
 
 div.stButton > button[kind="primary"]:hover {
-    box-shadow: 0 12px 28px rgba(0, 137, 123, 0.5) !important;
     background: linear-gradient(135deg, #00796B 0%, #0097A7 100%) !important;
+    box-shadow: 0 8px 20px rgba(0, 137, 123, 0.4) !important;
 }
 
 /* ===== SIDEBAR STYLING ===== */
@@ -827,7 +865,7 @@ if not st.session_state.authenticated:
         st.markdown('<div class="login-box">', unsafe_allow_html=True)
         st.markdown(logo_html, unsafe_allow_html=True)
         st.markdown("<h1>UFOmath</h1>", unsafe_allow_html=True)
-        st.markdown("<h3>Yurt Dışı Öğretmenlik Sınav Hazırlık</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color: #FF6F00;'>Yurt Dışı Öğretmenlik Sınav Hazırlık</h3>", unsafe_allow_html=True)
         
         st.info("🔐 Devam etmek için lütfen giriş yapın.")
         st.markdown("<br>", unsafe_allow_html=True)
@@ -909,7 +947,7 @@ def next_question(correct):
 if st.session_state.mode == "menu":
     st.markdown("""<style>#MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}</style>""", unsafe_allow_html=True)
     st.markdown(f"<div style='text-align: center;'>{logo_html}</div>", unsafe_allow_html=True)
-    st.markdown("<h4 style='text-align: center; margin-bottom: 20px; margin-top: -10px;'>Yurt Dışı Öğretmenlik Sınav Hazırlık Yazılımı</h4>", unsafe_allow_html=True)
+    st.markdown("<h4 style='text-align: center; margin-bottom: 20px; margin-top: -10px; color: #FF6F00;'>Yurt Dışı Öğretmenlik Sınav Hazırlık Yazılımı</h4>", unsafe_allow_html=True)
 
     # --- DEMO VE GİRİŞ UYARILARI (ANA EKRAN) ---
     if not st.session_state.authenticated:
