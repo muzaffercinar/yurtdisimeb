@@ -485,6 +485,8 @@ if 'timer_end' not in st.session_state:
     st.session_state.timer_end = None
 if 'show_answer' not in st.session_state:
     st.session_state.show_answer = False
+if 'show_login' not in st.session_state:
+    st.session_state.show_login = False
 
 # URL'den otomatik login
 query_params = st.query_params
@@ -658,7 +660,7 @@ if not st.session_state.authenticated and identifier:
 
 # === EKRAN ÇİZİMİ ===
 if not st.session_state.authenticated:
-    if is_demo_expired:
+    if is_demo_expired or st.session_state.get('show_login', False):
         st.markdown('<div class="login-box">', unsafe_allow_html=True)
         st.markdown(logo_html, unsafe_allow_html=True)
         st.markdown("<h1>UFOmath</h1>", unsafe_allow_html=True)
@@ -706,14 +708,9 @@ if not st.session_state.authenticated:
         </div>
         """, unsafe_allow_html=True)
         
-        # Otomatik yenileme için JavaScript (her 5 saniyede bir sayfa yenilenir)
-        st.components.v1.html("""
-        <script>
-            setTimeout(function() {
-                window.parent.location.reload();
-            }, 5000);
-        </script>
-        """, height=0)
+        if st.sidebar.button("🔐 Admin / Lisans Girişi", use_container_width=True):
+            st.session_state.show_login = True
+            st.rerun()
         
         if "user_code" not in st.session_state:
             st.session_state.user_code = "MİSAFİR"
