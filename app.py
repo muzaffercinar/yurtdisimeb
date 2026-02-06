@@ -626,22 +626,26 @@ def save_demo_tracker(tracker):
 demo_tracker = load_demo_tracker()
 demo_duration = 120  # 120 saniye (2 dakika)
 
+# --- KULLANICI KİMLİĞİ (URL TABANLI KALICI) ---
 # 1. URL'de 'did' var mı kontrol et
 query_params = st.query_params
 url_did = query_params.get("did", None)
 
+if "demo_id" not in st.session_state:
+    if url_did:
+        st.session_state.demo_id = url_did
+    else:
+        st.session_state.demo_id = "USER-" + str(uuid.uuid4())[:8].upper()
+
+# URL'yi güncelle (Eğer URL'de yoksa veya farklıysa)
+identifier = st.session_state.demo_id
+if url_did != identifier:
+     st.query_params["did"] = identifier
+
 current_time = time.time()
 is_demo_expired = False
 remaining_time = 0
-elapsed_time = 0 
-
-# --- KULLANICI KİMLİĞİ (Arka Planda, Sessizce) ---
-# Session state'te ID yoksa oluştur
-if "demo_id" not in st.session_state:
-    st.session_state.demo_id = "USER-" + str(uuid.uuid4())[:8].upper()
-
-# Identifier'ı session state'ten al (URL'ye gerek yok)
-identifier = st.session_state.demo_id
+elapsed_time = 0
 
 # --- SÜRE KONTROLÜ ---
 if not st.session_state.authenticated and identifier:
