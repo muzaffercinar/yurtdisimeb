@@ -622,7 +622,7 @@ def save_demo_tracker(tracker):
         pass
 
 demo_tracker = load_demo_tracker()
-demo_duration = 60  # 60 saniye
+demo_duration = 120  # 120 saniye (2 dakika)
 
 # 1. URL'de 'did' var mı kontrol et
 query_params = st.query_params
@@ -690,6 +690,13 @@ if not st.session_state.authenticated and identifier and not waiting_for_fingerp
 
 # === EKRAN ÇİZİMİ ===
 if not st.session_state.authenticated:
+    # Fingerprint bekleniyor ise yükleme ekranı göster
+    if waiting_for_fingerprint or identifier is None:
+        st.markdown(f"<div style='text-align: center;'>{logo_html}</div>", unsafe_allow_html=True)
+        st.markdown("<h2 style='text-align: center;'>🔄 Yükleniyor...</h2>", unsafe_allow_html=True)
+        st.info("Lütfen bekleyin, cihaz doğrulanıyor...")
+        st.stop()
+    
     if is_demo_expired:
         st.markdown('<div class="login-box">', unsafe_allow_html=True)
         st.markdown(logo_html, unsafe_allow_html=True)
@@ -728,7 +735,25 @@ if not st.session_state.authenticated:
         st.markdown('</div>', unsafe_allow_html=True)
         st.stop()
     else:
-        st.info(f"⏳ **DENEME MODU:** Uygulamayı ücretsiz inceliyorsunuz. Kalan Süre: **{remaining_time} saniye**")
+        # Sidebar'da kalıcı geri sayım göster
+        mins, secs = divmod(remaining_time, 60)
+        st.sidebar.markdown(f"""
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 15px; border-radius: 15px; text-align: center; margin-bottom: 20px;">
+            <p style="color: white; margin: 0; font-size: 12px;">⏳ DENEME MODU</p>
+            <p style="color: white; margin: 5px 0; font-size: 28px; font-weight: bold;">{mins:02d}:{secs:02d}</p>
+            <p style="color: rgba(255,255,255,0.8); margin: 0; font-size: 10px;">Kalan Süre</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Otomatik yenileme için JavaScript (her 5 saniyede bir sayfa yenilenir)
+        st.components.v1.html("""
+        <script>
+            setTimeout(function() {
+                window.parent.location.reload();
+            }, 5000);
+        </script>
+        """, height=0)
+        
         if "user_code" not in st.session_state:
             st.session_state.user_code = "MİSAFİR"
 
