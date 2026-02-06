@@ -66,17 +66,11 @@ if not st.session_state.authenticated:
     st.code(device_id, language="text")
     
     st.markdown("### Adım 2: Kodu Gönderin ve Şifre Alın")
-    email_subject = f"Lisans Talebi - Cihaz ID: {device_id}"
-    email_body = f"Merhaba,\n\nMC MEB Eğitim Seti için lisans almak istiyorum.\n\nCihaz Kodum: {device_id}\n\nLütfen aktivasyon şifremi gönderiniz."
-    mailto_link = f"mailto:muzaffercinarofficial@gmail.com?subject={email_subject}&body={email_body}"
     
-    st.markdown(f"""
-    <div style="text-align: center;">
-        <a href="{mailto_link}" target="_blank" style="background-color: #D32F2F; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">
-            ✉️ Gmail ile Şifre Talep Et
-        </a>
-    </div>
-    """, unsafe_allow_html=True)
+    st.warning("⚠️ Güvenlik gereği otomatik mail butonu pasife alınmıştır.")
+    st.info("Lütfen aşağıdaki Cihaz Kodunu kopyalayıp, şu adrese mail atınız:")
+    st.code("muzaffercinarofficial@gmail.com", language="text")
+    st.caption(f"(Konu kısmına 'Lisans Talebi - {device_id}' yazınız)")
     
     st.markdown("### Adım 3: Gelen Şifreyi Girin")
     license_input = st.text_input("Aktivasyon Şifresi", placeholder="XXXX-XXXX-XXXX")
