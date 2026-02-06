@@ -541,7 +541,7 @@ if not st.session_state.authenticated:
             is_demo_expired = True
             remaining_time = 0
         else:
-            remaining_time = int(demo_duration - elapsed)
+            remaining_time = int(demo_duration - elapsed_time)
     else:
         # Yeni kullanıcı veya ID'si silinmiş: Yeni ID ver ve başlat
         new_did = str(uuid.uuid4())[:8]  # Kısa UUID
