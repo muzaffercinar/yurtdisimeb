@@ -530,13 +530,14 @@ current_time = time.time()
 user_did = st.query_params.get("did", None)
 is_demo_expired = False
 remaining_time = 60 # Varsayılan değer
+elapsed_time = 0 # Varsayılan değer
 
 if not st.session_state.authenticated:
     if user_did and user_did in demo_tracker:
         # Mevcut kullanıcı: Süreyi kontrol et
         start_time = demo_tracker[user_did]
-        elapsed = current_time - start_time
-        if elapsed > demo_duration:
+        elapsed_time = current_time - start_time
+        if elapsed_time > demo_duration:
             is_demo_expired = True
             remaining_time = 0
         else:
