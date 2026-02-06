@@ -618,31 +618,42 @@ elapsed_time = 0
 # --- 1. JAVASCRIPT: LocalStorage Kontrolü (ARKA PLANDA) ---
 # Sadece URL'de ID yoksa çalışır. Başarılı olursa sayfayı yeniler.
 # Başarısız olursa (iframe engeli vb.) uygulama Session ID ile devam eder.
+# --- 1. JAVASCRIPT: Cihaz Parmak İzi (FingerprintJS) ---
+# En güvenilir Cihaz ID yöntemidir.
 if not url_did:
     js_code = """
     <script>
-        try {
-            let localDid = localStorage.getItem('bekard_demo_id');
-            if (localDid) {
+        // FingerprintJS CDN'den yükle ve çalıştır
+        const fpPromise = import('https://openfpcdn.io/fingerprintjs/v3')
+            .then(FingerprintJS => FingerprintJS.load());
+
+        fpPromise
+            .then(fp => fp.get())
+            .then(result => {
+                const visitorId = result.visitorId;
+                // URL'ye ekle ve sayfayı yenile
+                window.parent.location.href = window.parent.location.href.split('?')[0] + '?did=' + visitorId;
+            })
+            .catch(error => {
+                console.error("Fingerprint Hatası:", error);
+                // Hata durumunda LocalStorage Fallback
+                let localDid = localStorage.getItem('bekard_demo_id');
+                if (!localDid) {
+                    localDid = 'DEMO-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+                    localStorage.setItem('bekard_demo_id', localDid);
+                }
                 window.parent.location.href = window.parent.location.href.split('?')[0] + '?did=' + localDid;
-            } else {
-                localDid = 'DEMO-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-                localStorage.setItem('bekard_demo_id', localDid);
-                window.parent.location.href = window.parent.location.href.split('?')[0] + '?did=' + localDid;
-            }
-        } catch(e) {
-            console.log("JS Yönlendirme Hatası");
-        }
+            });
     </script>
     """
-    # Yüksekliği 0 yaparak gizle, st.stop() KULLANMA
     st.components.v1.html(js_code, height=0)
 
-# --- 2. PYTHON KİMLİK BELİRLEME (Non-Blocking) ---
+# --- 2. PYTHON KİMLİK BELİRLEME (SADECE CİHAZ ID) ---
 if url_did:
+    # 1. Öncelik: Fingerprint ID (Cihaz Kimliği)
     identifier = url_did
 else:
-    # JS henüz çalışmadıysa veya çalışamadıysa Session ID kullan
+    # 2. Öncelik: Geçici Session (JS yüklenene kadar)
     if "temp_did" not in st.session_state:
         st.session_state.temp_did = "TEMP-" + str(uuid.uuid4())[:8]
     identifier = st.session_state.temp_did
