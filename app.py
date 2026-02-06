@@ -8,7 +8,7 @@ import base64
 import re
 
 # Sayfa Yapısı
-st.set_page_config(page_title="UFOmath", page_icon="🚀", layout="centered")
+st.set_page_config(page_title="MC MEB Yurt Dışı", page_icon="📚", layout="centered")
 
 # --- VERİLERİ ÖNBELLEĞE ALMA VE YÜKLEME ---
 @st.cache_data
@@ -498,153 +498,319 @@ if not st.session_state.authenticated:
 LOGO_SVG = """
 <svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#4b6cb7;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#182848;stop-opacity:1" />
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1976D2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0D47A1;stop-opacity:1" />
     </linearGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
-      <feMerge>
-        <feMergeNode in="coloredBlur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD54F;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF8F00;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.3"/>
     </filter>
   </defs>
   
-  <!-- Outer Orbit Ring -->
-  <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="10,5"/>
+  <!-- Shield Shape -->
+  <path d="M100 10 L180 40 L180 100 C180 150 140 180 100 195 C60 180 20 150 20 100 L20 40 Z" 
+        fill="url(#shieldGrad)" stroke="url(#goldGrad)" stroke-width="3" filter="url(#shadow)"/>
   
-  <!-- Main Body -->
-  <circle cx="100" cy="100" r="80" fill="url(#grad1)" stroke="white" stroke-width="3" filter="url(#glow)"/>
+  <!-- Book Icon -->
+  <g transform="translate(100, 75)">
+    <rect x="-30" y="-20" width="25" height="35" rx="2" fill="white" opacity="0.9"/>
+    <rect x="5" y="-20" width="25" height="35" rx="2" fill="white" opacity="0.9"/>
+    <line x1="-17" y1="-10" x2="-7" y2="-10" stroke="#0D47A1" stroke-width="2"/>
+    <line x1="-17" y1="-2" x2="-7" y2="-2" stroke="#0D47A1" stroke-width="2"/>
+    <line x1="-17" y1="6" x2="-12" y2="6" stroke="#0D47A1" stroke-width="2"/>
+    <line x1="17" y1="-10" x2="27" y2="-10" stroke="#0D47A1" stroke-width="2"/>
+    <line x1="17" y1="-2" x2="27" y2="-2" stroke="#0D47A1" stroke-width="2"/>
+    <line x1="17" y1="6" x2="22" y2="6" stroke="#0D47A1" stroke-width="2"/>
+  </g>
   
-  <!-- Decorative Swoosh (Saturn Ring style) -->
-  <ellipse cx="100" cy="100" rx="90" ry="30" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" transform="rotate(-30, 100, 100)"/>
+  <!-- Star Accent -->
+  <polygon points="100,42 103,50 112,50 105,56 108,64 100,59 92,64 95,56 88,50 97,50" fill="url(#goldGrad)"/>
   
-  <!-- Text -->
-  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="'Trebuchet MS', sans-serif" font-weight="bold" font-size="32" fill="white" style="letter-spacing: 2px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">UFOmath</text>
+  <!-- Text: MC MEB -->
+  <text x="50%" y="140" dominant-baseline="middle" text-anchor="middle" 
+        font-family="'Inter', 'Segoe UI', sans-serif" font-weight="700" font-size="22" fill="white"
+        style="letter-spacing: 1px;">MC MEB</text>
   
-  <!-- Small Star Accents -->
-  <circle cx="50" cy="50" r="2" fill="white"/>
-  <circle cx="150" cy="150" r="3" fill="white"/>
-  <circle cx="160" cy="40" r="2" fill="white"/>
+  <!-- Subtitle: Yurt Dışı -->
+  <text x="50%" y="162" dominant-baseline="middle" text-anchor="middle" 
+        font-family="'Inter', 'Segoe UI', sans-serif" font-weight="500" font-size="12" fill="rgba(255,255,255,0.85)"
+        style="letter-spacing: 2px;">YURT DIŞI</text>
 </svg>
 """
 
 # Logo'yu Base64'e çevir
 logo_b64 = base64.b64encode(LOGO_SVG.encode('utf-8')).decode("utf-8")
-logo_html = f'<img src="data:image/svg+xml;base64,{logo_b64}" width="180">'
+logo_html = f'<img src="data:image/svg+xml;base64,{logo_b64}" width="160">'
 
 # CSS STİLLERİ
 st.markdown("""
 <style>
-/* Arka Plan */
+/* ===== GOOGLE FONTS ===== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* ===== CSS DESIGN TOKENS ===== */
+:root {
+    --primary: #0D47A1;
+    --primary-light: #1976D2;
+    --primary-dark: #0A3680;
+    --secondary: #00897B;
+    --secondary-light: #00ACC1;
+    --accent: #FF6F00;
+    --accent-light: #FFB300;
+    --bg-dark: #0A1628;
+    --bg-card: #1A2A40;
+    --bg-surface: #243B55;
+    --text-primary: #FFFFFF;
+    --text-secondary: #B0BEC5;
+    --success: #4CAF50;
+    --warning: #FFC107;
+    --error: #EF5350;
+    --border: rgba(255,255,255,0.1);
+    --shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+/* ===== MAIN APP BACKGROUND ===== */
 .stApp {
-    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-    background-size: 400% 400%;
-    animation: gradient 15s ease infinite;
+    background: linear-gradient(135deg, #0A1628 0%, #0D2137 40%, #1A2A40 80%, #0A1628 100%);
+    background-attachment: fixed;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-@keyframes gradient {
-    0% {background-position: 0% 50%;}
-    50% {background-position: 100% 50%;}
-    100% {background-position: 0% 50%;}
-}
-
-/* Streamlit Markasını Gizle */
+/* ===== HIDE STREAMLIT BRANDING ===== */
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 header {visibility: hidden;}
 
-/* Kompakt Görünüm İçin Boşlukları Azaltma */
+/* ===== CONTAINER SPACING ===== */
 div.block-container {
-    padding-top: 1rem !important;
-    padding-bottom: 1rem !important;
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+    max-width: 900px;
 }
 
 div[data-testid="stVerticalBlock"] > div {
-    gap: 0.5rem !important;
+    gap: 0.75rem !important;
+}
+
+/* ===== TYPOGRAPHY ===== */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', sans-serif !important;
+    color: var(--text-primary) !important;
+}
+
+h1 {
+    font-weight: 700 !important;
+    font-size: 2.25rem !important;
+    letter-spacing: -0.5px;
+}
+
+h2 {
+    font-weight: 600 !important;
+    font-size: 1.75rem !important;
+}
+
+h3 {
+    font-weight: 600 !important;
+    font-size: 1.25rem !important;
+    color: rgba(255,255,255,0.95) !important;
 }
 
 h4 {
-    margin-bottom: 5px !important;
-    padding-bottom: 0px !important;
+    font-weight: 500 !important;
+    font-size: 1rem !important;
+    color: var(--text-secondary) !important;
+    margin-bottom: 8px !important;
 }
 
-hr {
-    margin-top: 5px !important;
-    margin-bottom: 5px !important;
+p, span, div {
+    font-family: 'Inter', sans-serif;
 }
 
-/* Cam Efekti Kart */
-.login-box {
-    background: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    backdrop-filter: blur(8.5px);
-    -webkit-backdrop-filter: blur(8.5px);
+/* ===== CARD COMPONENTS ===== */
+.login-box, .premium-card {
+    background: linear-gradient(145deg, rgba(26, 42, 64, 0.95), rgba(36, 59, 85, 0.9));
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    padding: 40px;
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 32px;
     text-align: center;
     color: white;
 }
 
-/* Input Alanları */
+.contact-info {
+    background: linear-gradient(145deg, rgba(13, 71, 161, 0.3), rgba(0, 137, 123, 0.2));
+    padding: 20px;
+    border-radius: 16px;
+    margin-top: 24px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* ===== INPUT FIELDS ===== */
 .stTextInput input {
-    background-color: rgba(255, 255, 255, 0.8) !important;
-    border-radius: 10px !important;
-    border: none !important;
-    padding: 15px !important;
-    font-size: 18px !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 12px !important;
+    border: 2px solid transparent !important;
+    padding: 16px 20px !important;
+    font-size: 16px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 500 !important;
     text-align: center !important;
-    letter-spacing: 2px !important;
-    color: #333 !important;
-}
-
-/* Başlıklar */
-h1, h2, h3 {
-    color: white !important;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-}
-h4 {
-    color: rgba(255, 255, 255, 0.9) !important;
-    font-weight: normal !important;
-    letter-spacing: 1px;
-}
-
-/* Buton - Secondary (Varsayılan/Mavi) */
-.stButton button {
-    background: linear-gradient(45deg, #1e3c72 0%, #2a5298 100%) !important;
-    color: white !important;
-    border: none !important;
-    border-radius: 50px !important;
-    padding: 15px 30px !important;
-    font-size: 20px !important;
-    font-weight: bold !important;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
+    letter-spacing: 1px !important;
+    color: #1A2A40 !important;
     transition: all 0.3s ease !important;
-    width: 100% !important;
 }
 
-/* Buton - Primary (Turuncu - Demo İçin) */
-div.stButton > button[kind="primary"] {
-    background: linear-gradient(45deg, #FF512F 0%, #F09819 100%) !important;
+.stTextInput input:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.2) !important;
+}
+
+/* ===== BUTTONS - PRIMARY STYLE ===== */
+.stButton button {
+    background: linear-gradient(135deg, #0D47A1 0%, #1976D2 100%) !important;
     color: white !important;
     border: none !important;
-    box-shadow: 0 10px 20px rgba(255, 81, 47, 0.4) !important;
+    border-radius: 14px !important;
+    padding: 14px 28px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    font-family: 'Inter', sans-serif !important;
+    letter-spacing: 0.3px !important;
+    box-shadow: 0 6px 20px rgba(13, 71, 161, 0.35) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    width: 100% !important;
 }
 
 .stButton button:hover {
     transform: translateY(-3px) !important;
-    box-shadow: 0 15px 25px rgba(0,0,0,0.3) !important;
+    box-shadow: 0 12px 28px rgba(13, 71, 161, 0.45) !important;
+    background: linear-gradient(135deg, #1565C0 0%, #1E88E5 100%) !important;
 }
 
-/* İletişim Kutusu */
-.contact-info {
-    background: rgba(0, 0, 0, 0.3);
-    padding: 15px;
-    border-radius: 10px;
-    margin-top: 20px;
-    font-size: 14px;
+.stButton button:active {
+    transform: translateY(-1px) !important;
+}
+
+/* ===== BUTTONS - CTA/PRIMARY KIND ===== */
+div.stButton > button[kind="primary"] {
+    background: linear-gradient(135deg, #00897B 0%, #00ACC1 100%) !important;
+    box-shadow: 0 6px 20px rgba(0, 137, 123, 0.4) !important;
+}
+
+div.stButton > button[kind="primary"]:hover {
+    box-shadow: 0 12px 28px rgba(0, 137, 123, 0.5) !important;
+    background: linear-gradient(135deg, #00796B 0%, #0097A7 100%) !important;
+}
+
+/* ===== SIDEBAR STYLING ===== */
+section[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #0A1628 0%, #0D2137 50%, #1A2A40 100%) !important;
+    border-right: 1px solid rgba(255,255,255,0.08);
+}
+
+section[data-testid="stSidebar"] .stMarkdown {
+    color: var(--text-secondary);
+}
+
+section[data-testid="stSidebar"] h3 {
+    color: white !important;
+    font-size: 14px !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ===== ALERTS & INFO BOXES ===== */
+.stAlert, div[data-testid="stAlert"] {
+    border-radius: 14px !important;
+    border-left-width: 4px !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+div[data-testid="stAlert"] > div {
+    padding: 16px 20px !important;
+}
+
+/* ===== PROGRESS BAR ===== */
+.stProgress > div > div > div {
+    background: linear-gradient(90deg, #0D47A1, #00897B, #00ACC1) !important;
+    border-radius: 10px !important;
+}
+
+.stProgress > div > div {
+    background: rgba(255,255,255,0.1) !important;
+    border-radius: 10px !important;
+}
+
+/* ===== METRICS ===== */
+div[data-testid="stMetricValue"] {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 2rem !important;
+    color: white !important;
+}
+
+div[data-testid="stMetricLabel"] {
+    font-family: 'Inter', sans-serif !important;
+    color: var(--text-secondary) !important;
+}
+
+/* ===== SELECT BOX ===== */
+.stSelectbox > div > div {
+    background: rgba(255,255,255,0.95) !important;
+    border-radius: 12px !important;
+    border: none !important;
+}
+
+/* ===== DIVIDERS ===== */
+hr {
+    border: none !important;
+    height: 1px !important;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent) !important;
+    margin: 20px 0 !important;
+}
+
+/* ===== CAPTION TEXT ===== */
+.stCaption, div[data-testid="stCaptionContainer"] {
+    color: var(--text-secondary) !important;
+    font-size: 13px !important;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+    div.block-container {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    
+    .login-box {
+        padding: 20px 16px;
+        border-radius: 16px;
+    }
+    
+    h1 {
+        font-size: 1.75rem !important;
+    }
+    
+    .stButton button {
+        padding: 12px 20px !important;
+        font-size: 14px !important;
+    }
+}
+
+/* ===== ANIMATION FOR SUBTLE POLISH ===== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.stApp > div {
+    animation: fadeIn 0.4s ease-out;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -655,15 +821,15 @@ if not st.session_state.authenticated:
     if st.session_state.get('show_login', False):
         st.markdown('<div class="login-box">', unsafe_allow_html=True)
         st.markdown(logo_html, unsafe_allow_html=True)
-        st.markdown("<h1>UFOmath</h1>", unsafe_allow_html=True)
-        st.markdown("<h3>Yurt Dışı Öğretmenlik Sınav Hazırlık</h3>", unsafe_allow_html=True)
+        st.markdown("<h1>MC MEB Yurt Dışı</h1>", unsafe_allow_html=True)
+        st.markdown("<h4>Yurt Dışı Öğretmenlik Sınav Hazırlık Platformu</h4>", unsafe_allow_html=True)
         
         st.info("🔐 Devam etmek için lütfen giriş yapın.")
         st.markdown("<br>", unsafe_allow_html=True)
         
         col1, col2, col3 = st.columns([1,2,1])
         with col2:
-            user_code_input = st.text_input("Kullanıcı Kodu", placeholder="ÖRNEK: MEB001", label_visibility="collapsed")
+            user_code_input = st.text_input("Kullanıcı Kodu", placeholder="ÖRNEK: ŞİFRE001", label_visibility="collapsed")
             license_input = st.text_input("Şifre", placeholder="******", type="password", label_visibility="collapsed")
             
             if st.button("GİRİŞ YAP 🚀"):
@@ -682,8 +848,8 @@ if not st.session_state.authenticated:
 
         st.markdown("""
         <div class="contact-info">
-            <p>📧 ufomath@gmail.com | 📱 0505 446 51 98</p>
-            <h3 style="color: #fff; margin: 10px 0;">⬆️ LİSANS ANAHTARI TALEP ET ⬆️</h3>
+            <p>📧 ufomath@gmail.com</p>
+            <p style="color: #ddd; font-size: 14px; margin: 5px 0; font-weight: bold; letter-spacing: 0.5px;">LİSANS ANAHTARI TALEP ET</p>
             <hr>
             <a href="https://wa.me/?text=Merhaba%2C%20https%3A%2F%2Fyurtdisimebhazirlik.streamlit.app" target="_blank">
                 <button style="background-color: #25D366; color: white; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 20px;">
@@ -738,7 +904,7 @@ def next_question(correct):
 if st.session_state.mode == "menu":
     st.markdown("""<style>#MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}</style>""", unsafe_allow_html=True)
     st.markdown(f"<div style='text-align: center;'>{logo_html}</div>", unsafe_allow_html=True)
-    st.markdown("<h4 style='text-align: center; margin-bottom: 20px; margin-top: -10px;'>Yurt Dışı Öğretmenlik Sınav Hazırlık Yazılımı</h4>", unsafe_allow_html=True)
+    st.markdown("<h4 style='text-align: center; margin-bottom: 20px; margin-top: -10px;'>Yurt Dışı Öğretmenlik Sınav Hazırlık Platformu</h4>", unsafe_allow_html=True)
 
     # --- DEMO VE GİRİŞ UYARILARI (ANA EKRAN) ---
     if not st.session_state.authenticated:
@@ -823,7 +989,7 @@ if st.session_state.mode == "menu":
     st.markdown("""
     <div style="text-align: center; color: #eee; font-size: 12px; margin-top: 20px;">
         Bu yazılım MEB yurt dışı öğretmenlik sınavlarına hazırlananlara yardımcı ek kaynak olarak hazırlanmıştır.<br>
-        Her hakkı saklıdır. © 2026 UFOmath
+        Her hakkı saklıdır. © 2026 MC MEB Yurt Dışı
     </div>
     """, unsafe_allow_html=True)
             
@@ -928,7 +1094,7 @@ elif st.session_state.mode == "demo_limit":
     
     st.markdown("""
     <div class="contact-info">
-        <p>📧 ufomath@gmail.com | 📱 0505 446 51 98</p>
+        <p>📧 ufomath@gmail.com</p>
         <hr>
         <a href="https://wa.me/?text=Merhaba%2C%20Lisans%20hakkinda%20bilgi%20almak%20istiyorum." target="_blank">
             <button style="background-color: #25D366; color: white; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 20px;">
