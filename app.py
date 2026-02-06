@@ -668,12 +668,20 @@ if not st.session_state.authenticated and is_demo_expired:
             else:
                 st.error("❌ Hatalı veya geçersiz şifre!")
 
-    # --- İLETİŞİM ---
+    # --- İLETİŞİM VE PAYLAŞIM ---
     st.markdown("""
     <div class="contact-info">
         <p>🔑 <strong>Kullanıcı Kodu ve Şifre Talep:</strong></p>
         <p>📧 Mail: <strong>ufomath@gmail.com</strong></p>
         <p>📱 WhatsApp: <strong>0505 446 51 98</strong></p>
+        <hr style="margin: 10px 0; border-color: rgba(255,255,255,0.2);">
+        <p>📣 <strong>Arkadaşlarına Öner:</strong></p>
+        <a href="https://wa.me/?text=Merhaba%2C%20Yurt%20d%C4%B1%C5%9F%C4%B1%20%C3%B6%C4%9Fretmenlik%20s%C4%B1nav%C4%B1%20i%C3%A7in%20bu%20uygulamay%C4%B1%20kesinlikle%20incelemelisin%3A%20https%3A%2F%2Fyurtdisimebhazirlik.streamlit.app" target="_blank" style="text-decoration: none;">
+            <button style="background-color: #25D366; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <img src="https://cdn-icons-png.flaticon.com/512/1384/1384007.png" width="20" style="filter: brightness(0) invert(1);">
+                WhatsApp ile Paylaş
+            </button>
+        </a>
     </div>
     """, unsafe_allow_html=True)
     
@@ -777,6 +785,23 @@ if st.session_state.mode == "menu":
     
     st.sidebar.success(f"✅ Hoş geldiniz: {st.session_state.user_code}")
     st.sidebar.info(f"📊 Toplam Soru: {len(all_questions)}")
+    
+    # Sidebar Paylaşım
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### 📣 Arkadaşına Öner")
+    st.sidebar.markdown("""
+    <a href="https://wa.me/?text=Merhaba%2C%20Yurt%20d%C4%B1%C5%9F%C4%B1%20%C3%B6%C4%9Fretmenlik%20s%C4%B1nav%C4%B1%20i%C3%A7in%20bu%20uygulamay%C4%B1%20kesinlikle%20incelemelisin%3A%20https%3A%2F%2Fyurtdisimebhazirlik.streamlit.app" target="_blank" style="text-decoration: none;">
+        <button style="background-color: #25D366; color: white; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 20px;">
+            <img src="https://cdn-icons-png.flaticon.com/512/1384/1384007.png" width="16" style="filter: brightness(0) invert(1);">
+            WhatsApp ile Paylaş
+        </button>
+    </a>
+    """, unsafe_allow_html=True)
+    
+    if st.sidebar.button("🚪 ÇIKIŞ YAP", use_container_width=True):
+        st.session_state.authenticated = False
+        st.session_state.user_code = None
+        st.rerun()
 
 # === SINAV MODU ===
 elif st.session_state.mode == "exam":
