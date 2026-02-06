@@ -790,8 +790,6 @@ if st.session_state.mode == "menu":
                 st.rerun()
             else:
                 st.error("Hap bilgi dosyası bulunamadı!")
-            else:
-                st.error("Hap bilgi dosyası bulunamadı!")
     
     # Compact Divider
     st.markdown("<hr style='margin: 10px 0; border: 0; border-top: 1px solid rgba(255,255,255,0.3);'>", unsafe_allow_html=True)
