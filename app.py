@@ -555,6 +555,26 @@ st.markdown("""
 footer {visibility: hidden;}
 header {visibility: hidden;}
 
+/* Kompakt Görünüm İçin Boşlukları Azaltma */
+div.block-container {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+}
+
+div[data-testid="stVerticalBlock"] > div {
+    gap: 0.5rem !important;
+}
+
+h4 {
+    margin-bottom: 5px !important;
+    padding-bottom: 0px !important;
+}
+
+hr {
+    margin-top: 5px !important;
+    margin-bottom: 5px !important;
+}
+
 /* Cam Efekti Kart */
 .login-box {
     background: rgba(255, 255, 255, 0.15);
@@ -718,7 +738,7 @@ def next_question(correct):
 if st.session_state.mode == "menu":
     st.markdown("""<style>#MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}</style>""", unsafe_allow_html=True)
     st.markdown(f"<div style='text-align: center;'>{logo_html}</div>", unsafe_allow_html=True)
-    st.markdown("<h4 style='text-align: center; margin-bottom: 40px;'>Yurt Dışı Öğretmenlik Sınav Hazırlık Yazılımı</h4>", unsafe_allow_html=True)
+    st.markdown("<h4 style='text-align: center; margin-bottom: 20px; margin-top: -10px;'>Yurt Dışı Öğretmenlik Sınav Hazırlık Yazılımı</h4>", unsafe_allow_html=True)
 
     # --- DEMO VE GİRİŞ UYARILARI (ANA EKRAN) ---
     if not st.session_state.authenticated:
@@ -728,7 +748,8 @@ if st.session_state.mode == "menu":
              st.session_state.show_login = True
              st.rerun()
 
-    st.divider()
+    # Compact Divider
+    st.markdown("<hr style='margin: 10px 0; border: 0; border-top: 1px solid rgba(255,255,255,0.3);'>", unsafe_allow_html=True)
     col1, col2 = st.columns(2)
     with col1:
         if st.button("📚 GENEL SINAV\n[Pro 🔒]", use_container_width=True):
@@ -769,7 +790,11 @@ if st.session_state.mode == "menu":
                 st.rerun()
             else:
                 st.error("Hap bilgi dosyası bulunamadı!")
-    st.divider()
+            else:
+                st.error("Hap bilgi dosyası bulunamadı!")
+    
+    # Compact Divider
+    st.markdown("<hr style='margin: 10px 0; border: 0; border-top: 1px solid rgba(255,255,255,0.3);'>", unsafe_allow_html=True)
     st.markdown("### 📂 Kategoriye Göre Çalış")
     selected_cat = st.selectbox("Kategori Seçin", ["Tümü"] + categories)
     if st.button("Seçili Kategori ile Başla"):
