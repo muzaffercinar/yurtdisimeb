@@ -8,7 +8,7 @@ import base64
 import re
 
 # Sayfa Yapısı
-st.set_page_config(page_title="MC MEB Yurt Dışı", page_icon="📚", layout="centered")
+st.set_page_config(page_title="UFOmath", page_icon="🚀", layout="centered")
 
 # --- VERİLERİ ÖNBELLEĞE ALMA VE YÜKLEME ---
 @st.cache_data
@@ -498,53 +498,41 @@ if not st.session_state.authenticated:
 LOGO_SVG = """
 <svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#1976D2;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#0D47A1;stop-opacity:1" />
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4b6cb7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#182848;stop-opacity:1" />
     </linearGradient>
-    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#FFD54F;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#FF8F00;stop-opacity:1" />
-    </linearGradient>
-    <filter id="shadow">
-      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.3"/>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
     </filter>
   </defs>
   
-  <!-- Shield Shape -->
-  <path d="M100 10 L180 40 L180 100 C180 150 140 180 100 195 C60 180 20 150 20 100 L20 40 Z" 
-        fill="url(#shieldGrad)" stroke="url(#goldGrad)" stroke-width="3" filter="url(#shadow)"/>
+  <!-- Outer Orbit Ring -->
+  <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="10,5"/>
   
-  <!-- Book Icon -->
-  <g transform="translate(100, 75)">
-    <rect x="-30" y="-20" width="25" height="35" rx="2" fill="white" opacity="0.9"/>
-    <rect x="5" y="-20" width="25" height="35" rx="2" fill="white" opacity="0.9"/>
-    <line x1="-17" y1="-10" x2="-7" y2="-10" stroke="#0D47A1" stroke-width="2"/>
-    <line x1="-17" y1="-2" x2="-7" y2="-2" stroke="#0D47A1" stroke-width="2"/>
-    <line x1="-17" y1="6" x2="-12" y2="6" stroke="#0D47A1" stroke-width="2"/>
-    <line x1="17" y1="-10" x2="27" y2="-10" stroke="#0D47A1" stroke-width="2"/>
-    <line x1="17" y1="-2" x2="27" y2="-2" stroke="#0D47A1" stroke-width="2"/>
-    <line x1="17" y1="6" x2="22" y2="6" stroke="#0D47A1" stroke-width="2"/>
-  </g>
+  <!-- Main Body -->
+  <circle cx="100" cy="100" r="80" fill="url(#grad1)" stroke="white" stroke-width="3" filter="url(#glow)"/>
   
-  <!-- Star Accent -->
-  <polygon points="100,42 103,50 112,50 105,56 108,64 100,59 92,64 95,56 88,50 97,50" fill="url(#goldGrad)"/>
+  <!-- Decorative Swoosh (Saturn Ring style) -->
+  <ellipse cx="100" cy="100" rx="90" ry="30" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" transform="rotate(-30, 100, 100)"/>
   
-  <!-- Text: MC MEB -->
-  <text x="50%" y="140" dominant-baseline="middle" text-anchor="middle" 
-        font-family="'Inter', 'Segoe UI', sans-serif" font-weight="700" font-size="22" fill="white"
-        style="letter-spacing: 1px;">MC MEB</text>
+  <!-- Text -->
+  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="'Trebuchet MS', sans-serif" font-weight="bold" font-size="32" fill="white" style="letter-spacing: 2px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">UFOmath</text>
   
-  <!-- Subtitle: Yurt Dışı -->
-  <text x="50%" y="162" dominant-baseline="middle" text-anchor="middle" 
-        font-family="'Inter', 'Segoe UI', sans-serif" font-weight="500" font-size="12" fill="rgba(255,255,255,0.85)"
-        style="letter-spacing: 2px;">YURT DIŞI</text>
+  <!-- Small Star Accents -->
+  <circle cx="50" cy="50" r="2" fill="white"/>
+  <circle cx="150" cy="150" r="3" fill="white"/>
+  <circle cx="160" cy="40" r="2" fill="white"/>
 </svg>
 """
 
 # Logo'yu Base64'e çevir
 logo_b64 = base64.b64encode(LOGO_SVG.encode('utf-8')).decode("utf-8")
-logo_html = f'<img src="data:image/svg+xml;base64,{logo_b64}" width="160">'
+logo_html = f'<img src="data:image/svg+xml;base64,{logo_b64}" width="180">'
 
 # CSS STİLLERİ
 st.markdown("""
@@ -821,8 +809,8 @@ if not st.session_state.authenticated:
     if st.session_state.get('show_login', False):
         st.markdown('<div class="login-box">', unsafe_allow_html=True)
         st.markdown(logo_html, unsafe_allow_html=True)
-        st.markdown("<h1>MC MEB Yurt Dışı</h1>", unsafe_allow_html=True)
-        st.markdown("<h4>Yurt Dışı Öğretmenlik Sınav Hazırlık Platformu</h4>", unsafe_allow_html=True)
+        st.markdown("<h1>UFOmath</h1>", unsafe_allow_html=True)
+        st.markdown("<h3>Yurt Dışı Öğretmenlik Sınav Hazırlık</h3>", unsafe_allow_html=True)
         
         st.info("🔐 Devam etmek için lütfen giriş yapın.")
         st.markdown("<br>", unsafe_allow_html=True)
@@ -904,7 +892,7 @@ def next_question(correct):
 if st.session_state.mode == "menu":
     st.markdown("""<style>#MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}</style>""", unsafe_allow_html=True)
     st.markdown(f"<div style='text-align: center;'>{logo_html}</div>", unsafe_allow_html=True)
-    st.markdown("<h4 style='text-align: center; margin-bottom: 20px; margin-top: -10px;'>Yurt Dışı Öğretmenlik Sınav Hazırlık Platformu</h4>", unsafe_allow_html=True)
+    st.markdown("<h4 style='text-align: center; margin-bottom: 20px; margin-top: -10px;'>Yurt Dışı Öğretmenlik Sınav Hazırlık Yazılımı</h4>", unsafe_allow_html=True)
 
     # --- DEMO VE GİRİŞ UYARILARI (ANA EKRAN) ---
     if not st.session_state.authenticated:
@@ -989,7 +977,7 @@ if st.session_state.mode == "menu":
     st.markdown("""
     <div style="text-align: center; color: #eee; font-size: 12px; margin-top: 20px;">
         Bu yazılım MEB yurt dışı öğretmenlik sınavlarına hazırlananlara yardımcı ek kaynak olarak hazırlanmıştır.<br>
-        Her hakkı saklıdır. © 2026 MC MEB Yurt Dışı
+        Her hakkı saklıdır. © 2026 UFOmath
     </div>
     """, unsafe_allow_html=True)
             
