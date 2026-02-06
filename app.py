@@ -896,7 +896,7 @@ if st.session_state.mode == "menu":
 
     # --- DEMO VE GİRİŞ UYARILARI (ANA EKRAN) ---
     if not st.session_state.authenticated:
-        st.markdown('⚠️ DENEME MODU: Sadece Deneme Sınavında ilk 20 soruya erişiminiz var. 🔐 Lisans alınız! (<a href="mailto:ufomath@gmail.com?subject=Lisans%20Anahtar%C4%B1%20%C4%B0stiyorum&body=Tel%3A%20" style="color: #FF4444;">ufomath@gmail.com</a>)', unsafe_allow_html=True)
+        st.markdown('<div style="background: rgba(255,193,7,0.2); border-left: 4px solid #FFC107; padding: 12px 16px; border-radius: 8px; margin-bottom: 10px;">⚠️ DENEME MODU: Sadece Deneme Sınavında ilk 20 soruya erişiminiz var. 🔐 Lisans alınız! (<a href="mailto:ufomath@gmail.com?subject=Lisans%20Anahtari%20Istiyorum&amp;body=Tel:%20" style="color: #FF4444; font-weight: bold;">ufomath@gmail.com</a>)</div>', unsafe_allow_html=True)
         
         if st.button("🔐 ŞİFRE / LİSANS GİRİŞİ YAP", type="primary", use_container_width=True):
              st.session_state.show_login = True
